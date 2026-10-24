@@ -13,7 +13,9 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 5rem 2.5rem;
   display: flex;
@@ -36,18 +38,19 @@ main {
 }
 
 h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
   margin: 0 0 2.25rem;
   text-align: center;
   color: var(--heading);
 }
 
 h2 {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin: 2rem 0 0.5rem;
@@ -55,8 +58,8 @@ h2 {
 }
 
 p {
-  font-size: 0.875rem;
-  line-height: 1.7;
+  font-size: 0.9rem;
+  line-height: 1.75;
   margin: 0 0 1rem;
   color: var(--text);
 }
