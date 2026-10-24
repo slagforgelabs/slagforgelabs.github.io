@@ -1,0 +1,81 @@
+:root {
+  --bg: #111;
+  --text: #bbb;
+  --heading: #ff6a00;
+  --footer: #777;
+  --rule: #2a2a2a;
+  --link: #9ad;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  margin: 0;
+  padding: 5rem 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+main {
+  width: 100%;
+  max-width: 42rem;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+  margin: 0 auto 2.5rem;
+}
+
+h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  margin: 0 0 2.25rem;
+  text-align: center;
+  color: var(--heading);
+}
+
+h2 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 2rem 0 0.5rem;
+  color: var(--heading);
+}
+
+p {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+footer {
+  margin-top: 3.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--footer);
+  text-align: center;
+}
+
+footer p {
+  color: var(--footer);
+  margin: 0;
+  font-size: 0.75rem;
+}
