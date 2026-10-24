@@ -1,11 +1,11 @@
 :root {
-  --bg: #111;
-  --text: #bbb;
-  --heading: #ff6a00;
-  --footer: #777;
-  --rule: #2a2a2a;
-  --link: #9ad;
-  color-scheme: dark;
+  --bg: #ffffff;
+  --text: #4a5158;
+  --heading: #ff7b00;
+  --footer: #6b7280;
+  --rule: #e3e5e8;
+  --link: #b34e00;
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
