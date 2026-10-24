@@ -22,7 +22,7 @@ body {
 
 main {
   width: 100%;
-  max-width: 42rem;
+  max-width: 22rem;
   text-align: justify;
   text-justify: inter-word;
 }
@@ -30,7 +30,7 @@ main {
 .brand-logo {
   display: block;
   width: 100%;
-  max-width: 22rem;
+  max-width: 100%;
   height: auto;
   margin: 0 auto 2.5rem;
 }
