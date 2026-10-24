@@ -15,15 +15,15 @@
 }
 
 :root {
-  --bg: #ffffff;
-  --text: #303840;
-  --heading: #c25500;
-  --footer: #6b7280;
-  --rule: #e3e5e8;
-  --link: #b34e00;
+  --bg: #000000;
+  --text: #e8e8e8;
+  --heading: #fc7800;
+  --footer: #8b949e;
+  --rule: #2a2e33;
+  --link: #fc7800;
   --sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
