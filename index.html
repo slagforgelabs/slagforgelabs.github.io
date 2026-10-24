@@ -12,38 +12,48 @@
     color: #ddd;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     margin: 0;
-    padding: 4rem 1.5rem;
+    padding: 7rem 3rem 4rem;
     display: flex;
     justify-content: center;
   }
   main {
     width: 100%;
-    max-width: 42rem;
+    max-width: 40rem;
     text-align: justify;
     text-justify: inter-word;
   }
-  h1 {
-    font-size: 1.35rem;
-    font-weight: 600;
-    line-height: 1.35;
-    letter-spacing: 0.02em;
-    margin: 0 0 2.5rem;
+  .brand {
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0 0 1.1rem;
     text-align: center;
-    text-transform: none;
+    color: #f2f2f2;
   }
   h2 {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: 0.03em;
+    margin: 0 0 2.5rem;
+    text-align: center;
+    color: #e8732a;
+  }
+  h3 {
+    font-size: 0.8rem;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin: 2.25rem 0 0.6rem;
-    color: #f0f0f0;
+    margin: 2.1rem 0 0.55rem;
+    color: #e8732a;
   }
   p {
-    font-size: 0.95rem;
-    line-height: 1.7;
+    font-size: 0.85rem;
+    line-height: 1.75;
     margin: 0 0 1rem;
-    color: #bbb;
+    color: #aaa;
   }
   a { color: #9ad; text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -51,27 +61,33 @@
     margin-top: 3.5rem;
     padding-top: 1.25rem;
     border-top: 1px solid #2a2a2a;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     line-height: 1.7;
     color: #777;
     text-align: center;
   }
-  footer p { color: #777; margin: 0; font-size: 0.8rem; }
+  footer p { color: #777; margin: 0; font-size: 0.75rem; }
+  @media (max-width: 600px) {
+    body { padding: 4.5rem 1.6rem 3rem; }
+    .brand { font-size: 1.45rem; letter-spacing: 0.12em; }
+    h2 { font-size: 0.95rem; }
+  }
 </style>
 </head>
 <body>
 <main>
-  <h1>Agentic systems, scanning, and research.</h1>
+  <div class="brand">Slagforge Labs</div>
+  <h2>Agentic systems, scanning, and research.</h2>
 
   <p>Slagforge Labs is an independent technology lab working where AI, automation, and physical making meet. We test what works, build what fits, and keep it practical.</p>
 
-  <h2>Agentic Systems</h2>
+  <h3>Agentic Systems</h3>
   <p>Custom AI agents and automation built around how a business actually runs. We map the real need first, then design, test, and tune systems that hold up in daily use.</p>
 
-  <h2>Model Research</h2>
+  <h3>Model Research</h3>
   <p>Comparative evaluation of frontier and open weight models across reasoning, tool use, and long context performance. Quantized local inference, retrieval pipelines, and private deployments scoped to the workload.</p>
 
-  <h2>Photogrammetry</h2>
+  <h3>Photogrammetry</h3>
   <p>In house photogrammetry scanning, reverse engineering, and 3D printed prototypes for industrial and engineering projects. From physical object to digital model and back.</p>
 
   <footer>
