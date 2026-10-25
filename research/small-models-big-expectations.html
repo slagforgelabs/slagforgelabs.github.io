@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Small Models, Big Expectations: Notes on Local Inference in 2026 — Slagforge Labs</title>
+<meta name="description" content="Our first research note starts with an admission. We tried running agent work on small local models, and it didn't hold up.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Small Models, Big Expectations: Notes on Local Inference in 2026 — Slagforge Labs">
+<meta property="og:description" content="Our first research note starts with an admission. We tried running agent work on small local models, and it didn't hold up.">
+<meta property="og:url" content="https://slagforgelabs.ca/research/small-models-big-expectations.html">
+<meta property="og:image" content="https://slagforgelabs.ca/images/logo.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Small Models, Big Expectations: Notes on Local Inference in 2026 — Slagforge Labs">
+<meta name="twitter:description" content="Our first research note starts with an admission. We tried running agent work on small local models, and it didn't hold up.">
+<meta name="twitter:image" content="https://slagforgelabs.ca/images/logo.png">
+
+<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
+     Decorative only — inline SVG so the page makes no outside requests. -->
+<svg class="motif" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="motifStroke" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdc008"/>
+      <stop offset="1" stop-color="#fc7800"/>
+    </linearGradient>
+    <linearGradient id="motifFade" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="motifMask"><rect width="1200" height="700" fill="url(#motifFade)"/></mask>
+
+    <path id="motifT1" d="M600 700V640H380V300H200"/>
+    <path id="motifT2" d="M600 700V640H820V300H1000"/>
+    <path id="motifT3" d="M600 700V600H460V220H280"/>
+    <path id="motifT4" d="M600 700V600H740V220H920"/>
+    <path id="motifT5" d="M600 700V580H980V380"/>
+    <path id="motifT6" d="M600 700V580H220V380"/>
+  </defs>
+
+  <g stroke="url(#motifStroke)" stroke-width="1.6" opacity="0.35" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g class="motif-flow" stroke="url(#motifStroke)" stroke-width="2.2" opacity="0.8" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g fill="#fdc008" opacity="0.9" mask="url(#motifMask)">
+    <circle cx="200" cy="300" r="5"/><circle cx="1000" cy="300" r="5"/>
+    <circle cx="280" cy="220" r="5"/><circle cx="920" cy="220" r="5"/>
+    <circle cx="980" cy="380" r="4.4"/><circle cx="220" cy="380" r="4.4"/>
+  </g>
+
+  <g class="motif-pulses" fill="#fdc008" mask="url(#motifMask)">
+    <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" begin="0s"><mpath href="#motifT1"/></animateMotion></circle>
+    <circle r="5"><animateMotion dur="8.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#motifT2"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="9s" repeatCount="indefinite" begin="2.6s"><mpath href="#motifT3"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#motifT4"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="10s" repeatCount="indefinite" begin="3.4s"><mpath href="#motifT5"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="9.5s" repeatCount="indefinite" begin="4.1s"><mpath href="#motifT6"/></animateMotion></circle>
+  </g>
+</svg>
+
+<main>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html">Research</a>
+  </nav>
+  <img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo">
+
+  <h1>Small Models, Big Expectations: Notes on Local Inference in 2026</h1>
+  <p class="post-meta">October 24, 2026</p>
+
+  <p>Our first research note starts with an admission. We tried running agent work on small local models, and it didn't hold up. Local inference isn't a dead end, but the gap between running a model and running an agent on that model is wider than the hype suggests.</p>
+
+  <h2>What we tried</h2>
+  <p>Small open weight models in the 3B to 9B range, quantized to fit entry level consumer hardware, used as the core of a working assistant: everyday tasks, document handling, research summaries, and tool calls into real services.</p>
+
+  <h2>What broke</h2>
+  <p>Memory is the ceiling. A quantized 8B model fits. The context it needs does not. An agent's working memory (instructions, tool definitions, history, retrieved documents) grows fast, and the cache that holds it grows with it. Most local setups top out somewhere between 8K and 32K tokens of usable context. A real agent burns through that quickly.</p>
+
+  <p>Single calls are easy. Chains are hard. Small models can pick the right tool for one request reasonably well. Docker's evaluation of 21 models found Qwen3 8B close to hosted models on tool selection. But agents don't make one call. They make dozens in a row, and small errors compound. Multistep planning across many tools is still where small models drift.</p>
+
+  <p>Accuracy costs time. The most accurate local models in that same evaluation were also among the slowest. Qwen3 14B averaged around 142 seconds per interaction. Hosted models answered in a few seconds.</p>
+
+  <p>Security costs tokens. Hardening an agent against prompt injection means longer instructions, provenance rules, and confirmation steps. Every guardrail eats context a small model can't spare.</p>
+
+  <h2>Where local inference actually stands</h2>
+  <p>Small models have improved fast. Phi-4 mini, Qwen3 4B, Gemma 3 4B, and Llama 3.2 3B each fit in a few gigabytes and handle single turn tool use. Researchers at NVIDIA have argued that small models should take on most routine steps in agent systems and hand the hard parts to larger ones. Local runtimes keep getting faster.</p>
+
+  <h2>The honest summary for late 2026:</h2>
+  <p>Small local models are good at narrow, well defined jobs: classification, extraction, formatting, single tool calls, offline drafting.</p>
+  <p>They are not yet good at being the whole agent: long context, multistep planning, and holding a complex rule set over a long session.</p>
+  <p>The real constraint is memory, not compute. In our view, practical local agents start around 24GB of dedicated GPU memory, and serious ones need 48GB or more.</p>
+
+  <h2>What's next for the lab</h2>
+  <p>Split the work. Small local models handle narrow, private steps. Larger models handle planning and synthesis.</p>
+  <p>Move up a hardware tier. Our next round of testing runs on dedicated GPU hardware with enough memory for 30B to 70B class open weight models at usable context lengths.</p>
+  <p>Measure instead of guess. Future notes will publish our own numbers: tool call accuracy over long chains, real context limits, and cost per task against hosted equivalents.</p>
+
+  <p>The goal isn't local for its own sake. It's knowing exactly which parts of a workflow can stay private on hardware you own, and which can't yet.</p>
+
+  <div class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li><a href="https://www.docker.com/blog/local-llm-tool-calling-a-practical-evaluation/">Docker, Tool Calling with Local LLMs: A Practical Evaluation (2025)</a>: https://www.docker.com/blog/local-llm-tool-calling-a-practical-evaluation/</li>
+      <li><a href="https://arxiv.org/abs/2506.02153">Belcak et al. (NVIDIA), Small Language Models are the Future of Agentic AI (2025)</a>: https://arxiv.org/abs/2506.02153</li>
+      <li><a href="https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide">Digital Applied, Small Language Models for On-Device Agents in 2026</a>: https://www.digitalapplied.com/blog/small-language-models-on-device-agents-2026-guide</li>
+      <li><a href="https://www.local-llm.net/blog/state-of-local-ai-2026/">Local LLM, The State of Local AI in 2026</a>: https://www.local-llm.net/blog/state-of-local-ai-2026/</li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Every project starts with a conversation.</p>
+    <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+    <p>Built in Sudbury.</p>
+    <p>&copy; 2026 Slagforge Labs. All rights reserved.</p>
+  </footer>
+</main>
+</body>
+</html>
