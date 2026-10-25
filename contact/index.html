@@ -82,6 +82,7 @@
     if (!form) return;
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      form.classList.add('was-submitted');
       if (!form.reportValidity()) return;
       var v = function (id) { return document.getElementById(id).value.trim(); };
       var subject = 'Workload brief — ' + (v('org') || v('name'));
