@@ -478,3 +478,10 @@ footer p {
   .system-icon,
   .system-badge:hover .system-icon { transition: none; transform: none; }
 }
+
+/* --- Systems page: specialization note ---------------------------------- */
+.systems-note {
+  text-align: center;
+  max-width: 44rem;
+  margin: 0 auto 2.25rem;
+}
