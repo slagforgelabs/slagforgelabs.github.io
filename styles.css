@@ -112,9 +112,13 @@ main {
 
 body.bg-video-on .motif { display: none; }
 
-/* Reduced motion: no moving background, just the still frame. */
+/* Reduced motion: no moving background — keep the poster frame as a still image
+   so the page doesn't fall back to flat black with the motif hidden. */
 @media (prefers-reduced-motion: reduce) {
   .bg-video { display: none; }
+  body.bg-video-on {
+    background: #000 url("images/cathode-bg-poster.jpg") center / cover no-repeat fixed;
+  }
 }
 
 @media print {

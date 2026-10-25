@@ -21,7 +21,15 @@
 <link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css">
 </head>
-<body>
+<body class="bg-video-on">
+
+<!-- Video background (cathode-render-01-0006). The circuit motif below stays in the
+     markup, just hidden by body.bg-video-on in styles.css — remove the class to restore it. -->
+<video class="bg-video" autoplay muted loop playsinline preload="auto"
+       poster="../images/cathode-bg-poster.jpg" aria-hidden="true" tabindex="-1">
+  <source src="../images/cathode-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-video-scrim" aria-hidden="true"></div>
 
 <!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
      Decorative only — inline SVG so the page makes no outside requests. -->
