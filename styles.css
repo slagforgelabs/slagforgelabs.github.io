@@ -142,7 +142,7 @@ nav a { margin: 0 0.6rem; }
 
 .brand-logo-link { display: block; }
 .brand-logo-link img { margin-bottom: 0; }
-.brand-logo-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+.brand-logo-link:focus-visible { outline: 2px solid var(--heading); outline-offset: 6px; }
 
 h1 {
   font-size: 1.4rem;
@@ -173,6 +173,123 @@ p {
 
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
+
+/* --- Contact brief form ---
+   Default browser controls read as foreign on a black field. Every control
+   is re-skinned to the site's own type system: mono labels, thin rules,
+   flat surfaces, no rounded corners, no glow. */
+/* --- Contact brief form ---
+   Reference: gerrykingsley.com. No boxes, no filled surfaces. Each field is a
+   single hairline rule with the label above it in the site's own mono system,
+   so the form reads as typography rather than as a widget. */
+
+#brief-form {
+  margin: 2rem 0 0;
+  text-align: left;
+  max-width: 34rem;
+}
+
+#brief-form .field { margin: 0 0 2.25rem; }
+
+#brief-form label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--footer);
+  margin: 0 0 0.55rem;
+  transition: color 140ms linear;
+}
+
+#brief-form label .optional {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--rule);
+  font-style: italic;
+}
+
+#brief-form input,
+#brief-form textarea {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 0 0.6rem;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 140ms linear;
+}
+
+#brief-form textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+#brief-form input::placeholder,
+#brief-form textarea::placeholder {
+  color: #5c636b;
+  opacity: 1;
+}
+
+#brief-form input:hover,
+#brief-form textarea:hover { border-bottom-color: #3d434a; }
+
+#brief-form input:focus,
+#brief-form textarea:focus {
+  outline: none;
+  border-bottom-color: var(--heading);
+}
+
+#brief-form .field:focus-within label { color: var(--heading); }
+
+#brief-form button {
+  display: inline-block;
+  width: auto;
+  margin: 0.5rem 0 0;
+  padding: 0.75rem 1.75rem;
+  background: var(--heading);
+  color: #000;
+  border: 1px solid var(--heading);
+  border-radius: 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 140ms linear, color 140ms linear;
+}
+
+#brief-form button:hover {
+  background: transparent;
+  color: var(--heading);
+}
+
+#brief-form button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
+/* Invalid fields only after the user has tried to submit. */
+#brief-form input:invalid:not(:placeholder-shown),
+#brief-form textarea:invalid:not(:placeholder-shown) { border-bottom-color: #8a3a3a; }
+
+#brief-form .form-note {
+  margin: 1.5rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rule);
+}
 
 footer {
   margin-top: 3.5rem;

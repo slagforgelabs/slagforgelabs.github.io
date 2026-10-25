@@ -43,19 +43,28 @@
 
   <h2>Brief</h2>
   <form id="brief-form" novalidate>
-    <label for="name">Name</label>
-    <input id="name" name="name" type="text" autocomplete="name" required>
+    <div class="field">
+      <label for="name">Name</label>
+      <input id="name" name="name" type="text" autocomplete="name" required>
+    </div>
 
-    <label for="email">Email</label>
-    <input id="email" name="email" type="email" autocomplete="email" required>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+    </div>
 
-    <label for="org">Organization <span class="optional">optional</span></label>
-    <input id="org" name="org" type="text" autocomplete="organization">
+    <div class="field">
+      <label for="org">Organization <span class="optional">optional</span></label>
+      <input id="org" name="org" type="text" autocomplete="organization">
+    </div>
 
-    <label for="brief">The workload</label>
-    <textarea id="brief" name="brief" rows="5" required placeholder="What the system has to do, the volume, what cannot leave the building."></textarea>
+    <div class="field">
+      <label for="brief">The workload</label>
+      <textarea id="brief" name="brief" rows="5" required placeholder="What the system has to do, the volume, what cannot leave the building."></textarea>
+    </div>
 
     <button type="submit">Send brief</button>
+    <p class="form-note">Opens your mail client. Replies within two business days.</p>
   </form>
 
   <h2>Where</h2>
