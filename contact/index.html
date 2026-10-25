@@ -32,7 +32,6 @@
 
 <main>
   <nav>
-    <a href="../index.html">Home</a>
     <a href="../systems/index.html">Systems</a>
     <a href="../research/index.html">Research</a>
     <a href="index.html">Contact</a>
@@ -42,17 +41,46 @@
 
   <p>Tell us what the system has to do, what data it touches, and what cannot leave the building. We will tell you which route fits, or whether you need one at all.</p>
 
-  <h2>Direct</h2>
-  <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+  <h2>Brief</h2>
+  <form id="brief-form" novalidate>
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text" autocomplete="name" required>
+
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="email" required>
+
+    <label for="org">Organization <span class="optional">optional</span></label>
+    <input id="org" name="org" type="text" autocomplete="organization">
+
+    <label for="brief">The workload</label>
+    <textarea id="brief" name="brief" rows="5" required placeholder="What the system has to do, the volume, what cannot leave the building."></textarea>
+
+    <button type="submit">Send brief</button>
+  </form>
 
   <h2>Where</h2>
-  <p>Sudbury, Ontario, Canada. Engagements run remote and on site.</p>
+  <p>15 Mackenzie Lower Unit<br>Sudbury, Ontario, Canada<br>Engagements run remote and on site.</p>
 
   <h2>Response</h2>
   <p>Two business days. If it is urgent, say so in the subject line.</p>
 
   <h2>What to include</h2>
   <p>The workload, the volume, the constraint. One paragraph is enough to start. We will ask the rest.</p>
+
+  <script>
+  (function () {
+    var form = document.getElementById('brief-form');
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      var v = function (id) { return document.getElementById(id).value.trim(); };
+      var subject = 'Workload brief — ' + (v('org') || v('name'));
+      var body = 'Name: ' + v('name') + '\nEmail: ' + v('email') + '\nOrganization: ' + (v('org') || '—') + '\n\n' + v('brief');
+      window.location.href = 'mailto:lab@slagforgelabs.ca?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    });
+  })();
+  </script>
 
   <footer>
     <p>Every project starts with a conversation.</p>
