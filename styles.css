@@ -287,6 +287,60 @@ a:hover { text-decoration: underline; }
   color: var(--rule);
 }
 
+.systems-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.75rem 0 2.5rem;
+}
+
+.system-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--rule);
+  color: var(--footer);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color 140ms linear, color 140ms linear, transform 140ms linear;
+}
+
+.system-badge:hover,
+.system-badge:focus-visible {
+  border-color: var(--heading);
+  color: var(--heading);
+  transform: translateY(-2px);
+}
+
+.system-badge:focus-visible {
+  outline: 2px solid var(--heading);
+  outline-offset: 3px;
+}
+
+.system-icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.system-icon--color {
+  background: none;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .systems-grid { gap: 0.5rem; }
+  .system-badge { padding: 0.6rem 0.75rem; font-size: 0.65rem; }
+}
+
 footer {
   margin-top: 3.5rem;
   padding-top: 1.25rem;
@@ -353,3 +407,74 @@ footer p {
 }
 
 .sources li { margin-bottom: 0.4rem; }
+
+/* --- Systems page: floating technology badges ---------------------------
+   Icons are drawn as CSS masks over a solid fill so every mark renders in
+   exactly the same grey at rest and the same orange on hover. No brand
+   colours leak in, nothing red. -- */
+.systems-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem 1.25rem;
+  margin: 2rem 0 2.5rem;
+  padding: 0;
+}
+
+.system-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  width: 4.75rem;
+  text-decoration: none;
+  border: 0;
+}
+
+.system-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  background-color: var(--footer);
+  -webkit-mask-image: var(--icon);
+  mask-image: var(--icon);
+  -webkit-mask-size: 100%;
+  mask-size: 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  background-repeat: no-repeat;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.system-badge:hover .system-icon,
+.system-badge:focus-visible .system-icon {
+  background-color: var(--heading);
+  transform: translateY(-3px);
+}
+
+.system-name {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--footer);
+  text-align: center;
+  line-height: 1.2;
+  transition: color 180ms ease;
+}
+
+.system-badge:hover .system-name,
+.system-badge:focus-visible .system-name {
+  color: var(--heading);
+}
+
+.system-badge:focus-visible {
+  outline: 2px solid var(--heading);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-icon,
+  .system-badge:hover .system-icon { transition: none; transform: none; }
+}
