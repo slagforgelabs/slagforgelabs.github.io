@@ -41,10 +41,42 @@ body {
 }
 
 main {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 22rem;
   text-align: justify;
   text-justify: inter-word;
+}
+
+/* Decorative circuit motif: full-bleed, scales with the viewport, sits behind
+   the copy. Inline SVG in each page so there is nothing to request. */
+.motif {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dashes travel along the traces (option 2: pulses + dash flow). */
+.motif-flow {
+  stroke-dasharray: 7 16;
+  animation: motif-dash 3.4s linear infinite;
+}
+
+@keyframes motif-dash {
+  to { stroke-dashoffset: -23; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motif-pulses { display: none; }
+  .motif-flow { animation: none; }
+}
+
+@media print {
+  .motif { display: none; }
 }
 
 nav {
