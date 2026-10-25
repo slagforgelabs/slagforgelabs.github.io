@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Trillion-Parameter Desk — Slagforge Labs</title>
+<meta name="description" content="Meta's 816B Muse Spark Open runs on four Mac Studios. The capability is real; the economics are the open question for small labs.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Trillion-Parameter Desk — Slagforge Labs">
+<meta property="og:description" content="Meta's 816B Muse Spark Open runs on four Mac Studios. The capability is real; the economics are the open question for small labs.">
+<meta property="og:url" content="https://slagforgelabs.ca/research/the-trillion-parameter-desk.html">
+<meta property="og:image" content="https://slagforgelabs.ca/images/logo.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Trillion-Parameter Desk — Slagforge Labs">
+<meta name="twitter:description" content="Meta's 816B Muse Spark Open runs on four Mac Studios. The capability is real; the economics are the open question for small labs.">
+<meta name="twitter:image" content="https://slagforgelabs.ca/images/logo.png">
+
+<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body class="bg-video-on">
+
+<!-- Video background. The SVG motif below is kept intact and is only hidden
+     by body.bg-video-on in styles.css. -->
+<div class="bg-poster" aria-hidden="true"></div>
+<video class="bg-video" autoplay muted loop playsinline preload="auto"
+       poster="../images/cathode-bg-poster.jpg" aria-hidden="true" tabindex="-1">
+  <source src="../images/cathode-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-video-scrim" aria-hidden="true"></div>
+
+<!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
+     Decorative only — inline SVG so the page makes no outside requests. -->
+<svg class="motif" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="motifStroke" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdc008"/>
+      <stop offset="1" stop-color="#fc7800"/>
+    </linearGradient>
+    <linearGradient id="motifFade" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="motifMask"><rect width="1200" height="700" fill="url(#motifFade)"/></mask>
+
+    <path id="motifT1" d="M600 700V640H380V300H200"/>
+    <path id="motifT2" d="M600 700V640H820V300H1000"/>
+    <path id="motifT3" d="M600 700V600H460V220H280"/>
+    <path id="motifT4" d="M600 700V600H740V220H920"/>
+    <path id="motifT5" d="M600 700V580H980V380"/>
+    <path id="motifT6" d="M600 700V580H220V380"/>
+  </defs>
+
+  <g stroke="url(#motifStroke)" stroke-width="1.6" opacity="0.35" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g class="motif-flow" stroke="url(#motifStroke)" stroke-width="2.2" opacity="0.8" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g fill="#fdc008" opacity="0.9" mask="url(#motifMask)">
+    <circle cx="200" cy="300" r="5"/><circle cx="1000" cy="300" r="5"/>
+    <circle cx="280" cy="220" r="5"/><circle cx="920" cy="220" r="5"/>
+    <circle cx="980" cy="380" r="4.4"/><circle cx="220" cy="380" r="4.4"/>
+  </g>
+
+  <g class="motif-pulses" fill="#fdc008" mask="url(#motifMask)">
+    <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" begin="0s"><mpath href="#motifT1"/></animateMotion></circle>
+    <circle r="5"><animateMotion dur="8.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#motifT2"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="9s" repeatCount="indefinite" begin="2.6s"><mpath href="#motifT3"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#motifT4"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="10s" repeatCount="indefinite" begin="3.4s"><mpath href="#motifT5"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="9.5s" repeatCount="indefinite" begin="4.1s"><mpath href="#motifT6"/></animateMotion></circle>
+  </g>
+</svg>
+
+<main>
+  <nav>
+    <a href="index.html">Research</a>
+  </nav>
+  <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
+
+  <h1>The Trillion-Parameter Desk</h1>
+  <p class="post-meta">October 25, 2026</p>
+
+  <p>Meta released Muse Spark Open on October 15: 816 billion total parameters, 42 billion active, natively multimodal, a one-million-token context window. Apple, the same day, published a deployment running it across four Mac Studios at more than 36 tokens per second. That is a frontier-class model answering faster than most people read, on hardware a small lab can buy. The capability is no longer the question. The cost is.</p>
+
+  <p>What it means for your hardware: the number that matters is the active count, not the total. Muse Spark Open is a mixture-of-experts model, so each token only touches a fraction of its weights — roughly 42B worth per token instead of 816B. That is why a model this large can behave, at inference time, like something much smaller in compute terms. Apple's contribution is the plumbing: unified memory lets two M5 Ultra Mac Studios present close to a terabyte as one address space, and RDMA over Thunderbolt stitches them together. Two machines behave like one supercomputer. Four push further.</p>
+
+  <p>What is measured, what is claimed, what is uncertain.</p>
+
+  <p><strong>Claimed by the vendor:</strong> the 36+ tokens per second figure is Apple's own benchmark table for four machines. It is a credible engineering result from the vendor that built the stack, not an independent third-party run. Treat it as a ceiling until someone reproduces it.</p>
+
+  <p><strong>Claimed by Meta:</strong> calling Muse Spark Open "the most capable US open-weight model to date" is positioning, not a benchmark. The architecture and license are facts; the superiority claim is marketing.</p>
+
+  <p><strong>Measured elsewhere, with caveats:</strong> the Linux multi-GPU path is documented in DwarfStar's repository, which reports an eight-L40S setup reaching about 126 tokens per second aggregate across 16 concurrent sessions. That is a single project's reported number, not a controlled benchmark, but it describes a real multi-user local server rather than a one-off demo.</p>
+
+  <p>Three short items worth your time this week.</p>
+
+  <p><strong>The quantization floor keeps dropping.</strong> DwarfStar's recipes spend most compression on routed experts — IQ2_XXS gate/up and Q2_K down, guided by an importance matrix — while keeping other components at higher precision. Community builds report Qwen 3.8-27B running on an iPhone 18 Neural Engine at 15 to 70 tokens per second in 1.5 bits per weight. Those are community claims, not lab measurements. Four-bit is no longer the floor.</p>
+
+  <p><strong>"Bigger than your RAM" is now a design assumption.</strong> BigMoeOnEdge, an adaptive streaming optimizer for MoE models, claims it keeps what every token needs in memory and streams the rest from storage on demand, with output identical to running fully in memory. That is the project's claim, on stock llama.cpp. If it holds, a model several times larger than RAM becomes ordinary rather than an error condition.</p>
+
+  <p><strong>The economics are the wall.</strong> A 256GB Mac Studio starts at $9,499. Four of them is a substantial purchase. Whether self-hosting recoups that against falling API prices is a bet, and the honest answer is that nobody knows how long the window stays open. The capability is solved; the payback is not.</p>
+
+  <p>The whole stack now agrees on the same approach: park the cold experts, stream the rest, and treat bigger-than-memory as the normal case. The remaining gap is cost — and cost is the one number that reliably falls.</p>
+
+  <div class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li>Meta AI Research, <a href="https://research.meta.ai/blog/muse-spark-open">Introducing Muse Spark Open</a>.</li>
+      <li>Apple Machine Learning Research, <a href="https://machinelearning.apple.com/research/mlx-distributed-inference">Local and Distributed Large LLM Inference with MLX and RDMA on Mac Studio</a>.</li>
+      <li>DwarfStar / ds4, <a href="https://github.com/antirez/ds4">github.com/antirez/ds4</a>.</li>
+      <li>BigMoeOnEdge, <a href="https://github.com/Helldez/BigMoeOnEdge">github.com/Helldez/BigMoeOnEdge</a>.</li>
+      <li>Ignis, <a href="https://github.com/gpillon/ignis">github.com/gpillon/ignis</a>.</li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Every project starts with a conversation.</p>
+    <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+    <p><a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a></p>
+    <p>Sudbury, Ontario Canada.</p>
+    <p>&copy; 2026 Slagforge Labs. All rights reserved.</p>
+  </footer>
+</main>
+</body>
+</html>
