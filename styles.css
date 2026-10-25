@@ -79,6 +79,48 @@ main {
   .motif { display: none; }
 }
 
+/* --- Video background experiment (cathode-render-01-0006) ---
+   The circuit SVG above is NOT deleted: body.bg-video-on simply hides it.
+   Remove the bg-video-on class from <body> to bring the SVG back. */
+.bg-poster,
+.bg-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-poster {
+  background: #000 url("images/cathode-bg-poster.jpg") center / cover no-repeat;
+}
+
+.bg-video {
+  object-fit: cover;
+}
+
+/* Faint scrim so the copy never fights a bright moment in the render. */
+.bg-video-scrim {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.40), rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.45));
+}
+
+body.bg-video-on .motif { display: none; }
+
+/* Reduced motion: no moving background, just the still frame. */
+@media (prefers-reduced-motion: reduce) {
+  .bg-video { display: none; }
+}
+
+@media print {
+  .bg-video, .bg-poster, .bg-video-scrim { display: none; }
+}
+
 nav {
   font-family: var(--mono);
   font-size: 0.7rem;
