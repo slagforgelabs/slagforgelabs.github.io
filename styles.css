@@ -98,6 +98,10 @@ nav a { margin: 0 0.6rem; }
   margin: 0 auto 2.5rem;
 }
 
+.brand-logo-link { display: block; }
+.brand-logo-link img { margin-bottom: 0; }
+.brand-logo-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+
 h1 {
   font-size: 1.4rem;
   font-weight: 700;
