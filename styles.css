@@ -278,12 +278,6 @@ a:hover { text-decoration: underline; }
   outline-offset: 3px;
 }
 
-/* Invalid fields only after the user has tried to submit. Gated behind a class
-   set on submit, so empty required fields stay grey on first paint. Focused
-   fields keep the orange focus rule even when invalid. */
-#brief-form.was-submitted input:invalid:not(:focus),
-#brief-form.was-submitted textarea:invalid:not(:focus) { border-bottom-color: #8a3a3a; }
-
 #brief-form .form-note {
   margin: 1.5rem 0 0;
   font-family: var(--mono);
