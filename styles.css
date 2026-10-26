@@ -423,8 +423,8 @@ footer p {
 }
 
 /* Article hero: full-bleed banner at page width with the title laid over the
-   plate. Flat crop, no frame. The plate drifts against the scroll using a
-   native scroll-driven animation, so there is no JS on the page. */
+   plate. Flat crop, no frame. The plate drifts against the scroll — driven by
+   hero-drift.js, one small local script, no outside requests. */
 .post-hero {
   position: relative;
   width: 100vw;
@@ -436,10 +436,6 @@ footer p {
   overflow: hidden;
   background: #0b0d0f;
   line-height: 0;
-  /* The drift timeline is named on the banner itself, not on the plate: a view
-     timeline read off the element it animates is self-referential and stalls. */
-  view-timeline-name: --hero-plate;
-  view-timeline-axis: block;
 }
 
 /* The plate is oversized so it can travel: 20% of headroom above and below
@@ -492,26 +488,11 @@ footer p {
   text-shadow: 0 2px 20px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9);
 }
 
-/* Parallax: the plate travels slower than the page. The drift is bound to the
-   hero's own progress through the viewport, so it begins while the banner is on
-   screen and finishes as it leaves — not in the first screen of scroll. Native
-   where the browser has view timelines; still and centred everywhere else. */
-@keyframes heroDrift {
-  from { transform: translateY(-13%); }
-  to   { transform: translateY(13%); }
-}
-
-@supports (animation-timeline: view()) and (view-timeline-name: --hero-plate) {
-  .post-hero > img {
-    animation: heroDrift linear both;
-    animation-timeline: --hero-plate;
-    animation-range: cover 0% cover 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .post-hero > img { animation: none; transform: none; }
-}
+/* Parallax: the plate travels against the scroll while the banner is on screen.
+   The drift is applied by hero-drift.js rather than by a scroll timeline — a
+   native view timeline is supported on paper, but it does not render in every
+   engine we are read in, and the motion has to be there for everyone. Without
+   scripting the plate simply rests centred. */
 
 /* Tuck the date up under the hero. */
 .post-hero + .post-meta { margin-top: 0; }
