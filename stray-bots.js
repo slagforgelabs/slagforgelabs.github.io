@@ -107,6 +107,7 @@
     var sitter = makeBot(ids[2], sitterRem);
     sitter.classList.add("stray-sitter");
     if (getComputedStyle(footer).position === "static") footer.style.position = "relative";
+    footer.style.marginTop = "6rem";   // room for the bot above the footer
     sitter.style.position = "absolute";
     sitter.style.bottom = "100%";
     sitter.style.marginBottom = -(sitterRem * 6 / 40) + "rem";  // six empty rows under its feet
