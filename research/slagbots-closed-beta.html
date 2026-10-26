@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slagbots Are in Closed Beta — Slagforge Labs</title>
+<meta name="description" content="A Slagbot has been running our own lab for months. Now a few invited clients get one too: fun on the outside, serious underneath.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Slagbots Are in Closed Beta — Slagforge Labs">
+<meta property="og:description" content="A Slagbot has been running our own lab for months. Now a few invited clients get one too: fun on the outside, serious underneath.">
+<meta property="og:url" content="https://slagforgelabs.ca/research/slagbots-closed-beta.html">
+<meta property="og:image" content="https://slagforgelabs.ca/images/closed-beta-header.png">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Slagbots Are in Closed Beta — Slagforge Labs">
+<meta name="twitter:description" content="A Slagbot has been running our own lab for months. Now a few invited clients get one too: fun on the outside, serious underneath.">
+<meta name="twitter:image" content="https://slagforgelabs.ca/images/closed-beta-header.png">
+
+<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=202610261935">
+</head>
+<body class="bg-video-on">
+
+<!-- Video background. The SVG motif below is kept intact and is only hidden
+     by body.bg-video-on in styles.css. -->
+<div class="bg-poster" aria-hidden="true"></div>
+<video class="bg-video" autoplay muted loop playsinline preload="auto"
+       poster="../images/cathode-bg-poster.jpg" aria-hidden="true" tabindex="-1">
+  <source src="../images/cathode-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-video-scrim" aria-hidden="true"></div>
+
+<!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
+     Decorative only — inline SVG so the page makes no outside requests. -->
+<svg class="motif" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="motifStroke" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdc008"/>
+      <stop offset="1" stop-color="#fc7800"/>
+    </linearGradient>
+    <linearGradient id="motifFade" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="motifMask"><rect width="1200" height="700" fill="url(#motifFade)"/></mask>
+
+    <path id="motifT1" d="M600 700V640H380V300H200"/>
+    <path id="motifT2" d="M600 700V640H820V300H1000"/>
+    <path id="motifT3" d="M600 700V600H460V220H280"/>
+    <path id="motifT4" d="M600 700V600H740V220H920"/>
+    <path id="motifT5" d="M600 700V580H980V380"/>
+    <path id="motifT6" d="M600 700V580H220V380"/>
+  </defs>
+
+  <g stroke="url(#motifStroke)" stroke-width="1.6" opacity="0.35" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g class="motif-flow" stroke="url(#motifStroke)" stroke-width="2.2" opacity="0.8" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g fill="#fdc008" opacity="0.9" mask="url(#motifMask)">
+    <circle cx="200" cy="300" r="5"/><circle cx="1000" cy="300" r="5"/>
+    <circle cx="280" cy="220" r="5"/><circle cx="920" cy="220" r="5"/>
+    <circle cx="980" cy="380" r="4.4"/><circle cx="220" cy="380" r="4.4"/>
+  </g>
+
+  <g class="motif-pulses" fill="#fdc008" mask="url(#motifMask)">
+    <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" begin="0s"><mpath href="#motifT1"/></animateMotion></circle>
+    <circle r="5"><animateMotion dur="8.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#motifT2"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="9s" repeatCount="indefinite" begin="2.6s"><mpath href="#motifT3"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#motifT4"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="10s" repeatCount="indefinite" begin="3.4s"><mpath href="#motifT5"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="9.5s" repeatCount="indefinite" begin="4.1s"><mpath href="#motifT6"/></animateMotion></circle>
+  </g>
+</svg>
+
+<main>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../slagbots/index.html">Slagbots</a>
+    <a href="../services/index.html">Services</a>
+    <a href="../systems/index.html">Systems</a>
+    <a href="../research/index.html" aria-current="page">Research</a>
+    <a href="../tools/index.html">Tools</a>
+  </nav>
+  <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
+
+  <figure class="post-hero">
+    <img src="../images/closed-beta-header.png" alt="Pixel art of Slagbot Remote, Slagbot Local and the crowned Slagboss standing on a slag heap at night" width="1800" height="600" style="image-rendering: pixelated;">
+    <div class="post-hero-inner">
+      <h1>Slagbots Are in Closed Beta</h1>
+    </div>
+  </figure>
+  <p class="post-meta">October 26, 2026</p>
+
+  <p>For months, a Slagbot has been running our own lab. It keeps the schedule, sends the morning brief, files the paperwork, chases the research, and tells us when we are wrong. Now we are opening the door a crack. Slagbots are in closed beta: a small number of invited clients, each bot configured, tuned, and watched closely, one at a time.</p>
+
+  <h2>Fun on purpose</h2>
+  <p>Most AI tools are built to be tolerated. You open them when you have to, ask your question, and close the tab. We think that is the wrong way round. A tool you enjoy is a tool you actually use, and an assistant you actually use is the only kind that ever learns your work.</p>
+  <p>So a Slagbot has a face, a little attitude, and a story that starts in the slag heaps of Sudbury. It grumbles. It pushes back. It blinks at you from the corner of the screen. That is not decoration. It is the reason people keep talking to it on day one hundred, and the reason it ends up knowing their business better than any general assistant could.</p>
+
+  <h2>Serious underneath</h2>
+  <p>The grin is on the outside. Behind it is a system built for industrial and commercial work, where a wrong answer costs money and a leaked file costs more.</p>
+  <p>Slagbots can run entirely on hardware in your building, so your data never leaves it. They confirm before any action that matters. They are hardened against prompt injection and the other tricks people use to hijack agents. They keep track of where their information came from, back up every day, and get tested in our lab before they reach a client. For bigger jobs, a Slagboss runs a crew of smaller bots on your own machines, assigns the work, checks it, and reports back.</p>
+  <p>How we build that stays in the lab. What a client sees is a bot that is easy to like and hard to break.</p>
+
+  <figure class="post-figure post-figure--narrow">
+    <img src="../images/art/treated/forge-motif-3x2.jpg" alt="Engraving of the Forge of Vulcan, smiths hammering at a fire" width="1400" height="933">
+    <figcaption>The Forge of Vulcan. Behind every grin, a working forge.</figcaption>
+  </figure>
+
+  <h2>What the beta means</h2>
+  <p>Closed means invite only, and we are starting close to home in Sudbury. Each beta client gets a Slagbot set up for their own tools and their own way of working. We stay close while it settles in, tune what needs tuning, and fold what we learn back into every bot that comes after. Beta clients help shape what a Slagbot becomes.</p>
+  <p>If you have work a Slagbot could take off your plate, or an industrial or commercial project that needs a serious system with a friendly face, write to us at <a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a>. Tell us the role you need filled. We will tell you which Slagbot fits.</p>
+
+  <footer>
+    <p>Every project starts with a conversation.</p>
+    <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+    <p><a href="../contact/index.html">Contact</a> &nbsp;/&nbsp; <a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a> &nbsp;/&nbsp; <a href="../legal/index.html">Legal</a> &nbsp;/&nbsp; <a href="../tools/index.html">Tools</a></p>
+    <p>Sudbury, Ontario Canada.</p>
+    <p>&copy; 2026 Slagforge Labs. All rights reserved.<br>Slagbot&trade; and Slagboss&trade; are trademarks of Slagforge Labs.</p>
+  </footer>
+</main>
+<script src="../hero-drift.js?v=202610261935" defer></script>
+<script src="../stray-bots.js?v=202610261935" defer></script>
+</body>
+</html>
