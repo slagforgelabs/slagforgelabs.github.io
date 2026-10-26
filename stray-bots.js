@@ -1,10 +1,19 @@
 /* Stray Slagbots.
  *
- * A few random Slagbots from the pool in images/slagbots/strays wander onto
- * every page: one or two floating in the side margins on wide screens, and
- * one sitting on the footer rule at any size. A different crew each visit.
- * They float and blink like the other bots on the site (see .bot in
- * styles.css), and stay still for visitors who prefer reduced motion.
+ * Random Slagbots from the pool in images/slagbots/strays wander onto every
+ * page except home, a different crew each visit:
+ *
+ *  - Drifters float in the foreground, fixed to the window so they stay with
+ *    you as you scroll, wandering slowly through the side margins (or along
+ *    one edge on phones). Grab one and fling it: throw it hard enough and it
+ *    sails off screen, and a new stray wanders in from an edge a little later.
+ *    A gentle throw just sends it tumbling back into its margin.
+ *  - One more stands just above the footer.
+ *
+ * They bob and blink like the other bots on the site (see .bot in
+ * styles.css). Visitors who prefer reduced motion get still bots in the
+ * margins instead. All the placement lives here, inline, so an old cached
+ * stylesheet can never drop them into the page flow.
  */
 (function () {
   "use strict";
@@ -14,16 +23,20 @@
   var base = script ? script.src.replace(/stray-bots\.js.*$/, "") : "/";
   var main = document.querySelector("main");
   if (!main) return;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Shuffle the pool so no bot turns up twice on one page.
+  // Shuffle the pool so no bot turns up twice in a row.
   var ids = [];
   for (var i = 1; i <= POOL; i++) ids.push(i);
   for (var j = ids.length - 1; j > 0; j--) {
     var k = Math.floor(Math.random() * (j + 1));
     var t = ids[j]; ids[j] = ids[k]; ids[k] = t;
   }
+  var nextId = 0;
+  function takeId() { var id = ids[nextId % POOL]; nextId++; return id; }
 
   function rand(a, b) { return a + Math.random() * (b - a); }
+  var rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
 
   function makeBot(id, sizeRem) {
     var n = (id < 10 ? "0" : "") + id;
@@ -34,77 +47,27 @@
     span.style.animationDelay = (-rand(0, 3.2)).toFixed(2) + "s";
     span.style.animationDuration = rand(2.8, 4).toFixed(2) + "s";
 
-    var img = document.createElement("img");
-    img.src = base + "images/slagbots/strays/stray-" + n + ".png";
-    img.alt = "";
-    img.width = 40; img.height = 40;
-
-    var blink = document.createElement("img");
-    blink.className = "bot-blink";
-    blink.src = base + "images/slagbots/strays/stray-" + n + "-blink.png";
-    blink.alt = "";
-    blink.width = 40; blink.height = 40;
-    blink.style.animationDuration = rand(4.5, 7.5).toFixed(2) + "s";
-    blink.style.animationDelay = (-rand(0, 6)).toFixed(2) + "s";
-
-    span.appendChild(img);
-    span.appendChild(blink);
+    [["", ""], ["-blink", "bot-blink"]].forEach(function (f) {
+      var img = document.createElement("img");
+      img.src = base + "images/slagbots/strays/stray-" + n + f[0] + ".png";
+      img.alt = "";
+      img.width = 40; img.height = 40;
+      img.draggable = false;
+      if (f[1]) {
+        img.className = f[1];
+        img.style.animationDuration = rand(4.5, 7.5).toFixed(2) + "s";
+        img.style.animationDelay = (-rand(0, 6)).toFixed(2) + "s";
+      }
+      span.appendChild(img);
+    });
     return span;
   }
 
-  // Placement lives here, inline, so a stale cached stylesheet can never drop
-  // the bots into the page flow and stretch it.
-  var rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  /* ---------- Footer bot ---------- */
   var footer = main.querySelector("footer");
-
-  // Margin strays: one per side so they never crowd each other. Each gets a
-  // band of the page (upper or lower) so they don't line up, and a spot that
-  // stays clear of the text column and inside the window.
-  var sides = Math.random() < 0.5 ? ["left", "right"] : ["right", "left"];
-  var count = Math.random() < 0.4 ? 1 : 2;
-  var strays = [];
-  for (var m = 0; m < count; m++) {
-    var size = rand(6, 8.5);
-    var bot = makeBot(ids[m], size);
-    bot.classList.add("stray-margin");
-    bot.style.position = "absolute";
-    bot.style.display = "none";
-    main.appendChild(bot);
-    strays.push({
-      el: bot,
-      side: sides[m],
-      sizePx: size * rem,
-      gap: rand(2.5, 6) * rem,        // clear space between text and bot
-      band: m === 0 ? [0.2, 0.5] : [0.5, 0.85],
-      pick: Math.random()
-    });
-  }
-
-  function place() {
-    var mainW = main.offsetWidth;
-    var gutter = (document.documentElement.clientWidth - mainW) / 2;
-    var bottom = (footer ? footer.offsetTop : main.offsetHeight) - 2 * rem;
-    var top = 14 * rem;                    // below the nav and logo
-    strays.forEach(function (s) {
-      var room = gutter - s.gap - s.sizePx - rem;  // keep 1rem off the window edge
-      var lo = top + (bottom - top) * s.band[0];
-      var hi = Math.min(top + (bottom - top) * s.band[1], bottom - s.sizePx);
-      if (room < 0 || hi <= lo) { s.el.style.display = "none"; return; }
-      s.el.style.display = "inline-block";
-      s.el.style.top = Math.round(lo + (hi - lo) * s.pick) + "px";
-      s.el.style.left = s.el.style.right = "";
-      s.el.style[s.side] = -Math.round(s.gap + s.sizePx + room * s.pick * 0.6) + "px";
-    });
-  }
-  place();
-  window.addEventListener("resize", place);
-  window.addEventListener("load", place);
-  main.addEventListener("toggle", place, true);   // sections opening and closing
-
-  // One more sitting on the footer line.
   if (footer) {
     var sitterRem = 4.5;
-    var sitter = makeBot(ids[2], sitterRem);
+    var sitter = makeBot(takeId(), sitterRem);
     sitter.classList.add("stray-sitter");
     if (getComputedStyle(footer).position === "static") footer.style.position = "relative";
     footer.style.marginTop = "6rem";   // room for the bot above the footer
@@ -114,4 +77,176 @@
     sitter.style.left = rand(8, 78).toFixed(1) + "%";
     footer.appendChild(sitter);
   }
+
+  /* ---------- Drifters ---------- */
+
+  // A layer over the page that ignores the pointer except on the bots.
+  var layer = document.createElement("div");
+  layer.setAttribute("aria-hidden", "true");
+  layer.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden;";
+  document.body.appendChild(layer);
+
+  // Where a drifter may wander, in window coordinates. Wide screens: the side
+  // margins, clear of the text. Narrow screens: hugging one edge.
+  function zone(side, size) {
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    var r = main.getBoundingClientRect();
+    var gap = 2 * rem;
+    var z = { y0: 4.5 * rem, y1: vh - size - rem };
+    if (r.left - gap - size - rem > 0) {
+      if (side === "left") { z.x0 = rem; z.x1 = r.left - gap - size; }
+      else { z.x0 = r.right + gap; z.x1 = vw - size - rem; }
+    } else {
+      // No margin to speak of: tuck mostly into the edge padding.
+      if (side === "left") { z.x0 = -size * 0.35; z.x1 = -size * 0.1; }
+      else { z.x0 = vw - size * 0.9; z.x1 = vw - size * 0.65; }
+      z.y0 = vh * 0.35;
+    }
+    if (z.x1 < z.x0) z.x1 = z.x0;
+    if (z.y1 < z.y0) z.y1 = z.y0;
+    return z;
+  }
+
+  function wide() {
+    var r = main.getBoundingClientRect();
+    return r.left > 10 * rem;
+  }
+
+  var drifters = [];
+
+  function spawn(side, enter) {
+    var small = !wide();
+    var sizeRem = small ? 3.2 : rand(5.5, 7.5);
+    var size = sizeRem * rem;
+    var wrap = document.createElement("div");
+    wrap.style.cssText = "position:absolute;left:0;top:0;pointer-events:auto;cursor:grab;touch-action:none;will-change:transform;";
+    var bot = makeBot(takeId(), sizeRem);
+    bot.classList.add("stray-drifter");
+    wrap.appendChild(bot);
+    layer.appendChild(wrap);
+
+    var z = zone(side, size);
+    var d = {
+      el: wrap, side: side, size: size,
+      x: rand(z.x0, z.x1), y: rand(z.y0, z.y1),
+      vx: 0, vy: 0, rot: 0,
+      seed: Math.random() * 1000,
+      free: false, held: false, gone: false
+    };
+    if (enter) {
+      // Wander in from the nearest window edge.
+      var vw = document.documentElement.clientWidth;
+      d.x = side === "left" ? -size - 10 : vw + 10;
+      d.vx = side === "left" ? rand(90, 140) : -rand(90, 140);
+    }
+    grab(d);
+    drifters.push(d);
+    draw(d);
+    return d;
+  }
+
+  function draw(d) {
+    d.el.style.transform = "translate(" + d.x.toFixed(1) + "px," + d.y.toFixed(1) + "px) rotate(" + d.rot.toFixed(1) + "deg)";
+  }
+
+  // Click and hold to pick a bot up; let go to throw it.
+  function grab(d) {
+    var trail = [];
+    d.el.addEventListener("pointerdown", function (e) {
+      if (d.gone) return;
+      e.preventDefault();
+      d.held = true; d.free = false;
+      d.el.style.cursor = "grabbing";
+      d.el.setPointerCapture(e.pointerId);
+      d.ox = e.clientX - d.x; d.oy = e.clientY - d.y;
+      trail = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+    });
+    d.el.addEventListener("pointermove", function (e) {
+      if (!d.held) return;
+      var now = performance.now();
+      var nx = e.clientX - d.ox, ny = e.clientY - d.oy;
+      d.rot = Math.max(-25, Math.min(25, (nx - d.x) * 1.5));
+      d.x = nx; d.y = ny;
+      trail.push({ x: e.clientX, y: e.clientY, t: now });
+      while (trail.length > 2 && now - trail[0].t > 90) trail.shift();
+      draw(d);
+    });
+    function release(e) {
+      if (!d.held) return;
+      d.held = false;
+      d.el.style.cursor = "grab";
+      var a = trail[0], b = trail[trail.length - 1];
+      var dt = Math.max(16, b.t - a.t) / 1000;
+      d.vx = (b.x - a.x) / dt; d.vy = (b.y - a.y) / dt;
+      d.free = true;   // fly freely until it slows down
+    }
+    d.el.addEventListener("pointerup", release);
+    d.el.addEventListener("pointercancel", release);
+  }
+
+  function respawnLater(side) {
+    setTimeout(function () { if (!document.hidden) spawn(side, true); else respawnLater(side); }, rand(6000, 12000));
+  }
+
+  var last = 0;
+  function tick(now) {
+    var dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+    last = now;
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+
+    for (var i = drifters.length - 1; i >= 0; i--) {
+      var d = drifters[i];
+      if (d.held) continue;
+      var z = zone(d.side, d.size);
+      var speed = Math.hypot(d.vx, d.vy);
+
+      if (d.free) {
+        // Thrown: coast with a little air drag. Fast enough and off it goes.
+        d.vx *= Math.pow(0.35, dt); d.vy *= Math.pow(0.35, dt);
+        d.rot += d.vx * dt * 0.4;
+        if (speed < 120) d.free = false;
+      } else {
+        // Wander: a slow, smooth drift, pulled gently back into its zone.
+        var s = now / 1000 + d.seed;
+        d.vx += (Math.sin(s * 0.37) + Math.sin(s * 0.91)) * 9 * dt;
+        d.vy += (Math.cos(s * 0.29) + Math.sin(s * 0.73)) * 9 * dt;
+        if (d.x < z.x0) d.vx += (z.x0 - d.x) * 1.6 * dt;
+        if (d.x > z.x1) d.vx -= (d.x - z.x1) * 1.6 * dt;
+        if (d.y < z.y0) d.vy += (z.y0 - d.y) * 1.6 * dt;
+        if (d.y > z.y1) d.vy -= (d.y - z.y1) * 1.6 * dt;
+        d.vx *= Math.pow(0.55, dt); d.vy *= Math.pow(0.55, dt);
+        d.rot += (d.vx * 0.06 - d.rot) * Math.min(1, dt * 3);
+      }
+
+      d.x += d.vx * dt; d.y += d.vy * dt;
+
+      // Flung clean off the screen: gone, and someone new turns up later.
+      var out = d.x < -d.size - 40 || d.x > vw + 40 || d.y < -d.size - 40 || d.y > vh + 40;
+      if (out && (d.free || speed > 60)) {
+        d.gone = true;
+        d.el.remove();
+        drifters.splice(i, 1);
+        respawnLater(d.side);
+        continue;
+      }
+      draw(d);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  if (reduce) {
+    // Still bots, one per margin, only where there is room.
+    if (wide()) {
+      ["left", "right"].slice(0, Math.random() < 0.4 ? 1 : 2).forEach(function (side) {
+        var d = spawn(side, false);
+        d.el.style.cursor = "default";
+      });
+    }
+    return;
+  }
+
+  var sides = Math.random() < 0.5 ? ["left", "right"] : ["right", "left"];
+  var count = wide() ? (Math.random() < 0.4 ? 1 : 2) : 1;
+  for (var m = 0; m < count; m++) spawn(sides[m], false);
+  requestAnimationFrame(tick);
 })();
