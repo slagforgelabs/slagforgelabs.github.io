@@ -414,9 +414,8 @@ a:hover { text-decoration: underline; }
 }
 
 footer {
-  margin-top: 3.5rem;
+  margin-top: 6rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--rule);
   font-size: 0.75rem;
   line-height: 1.7;
   color: var(--footer);
@@ -1077,7 +1076,7 @@ details[open] > .slag-body {
 
 footer { position: relative; }
 
-/* Sits on the footer rule: the sprite has six empty rows under its feet. */
+/* Stands just above the footer: the sprite has six empty rows under its feet. */
 .stray-sitter {
   position: absolute;
   bottom: 100%;
