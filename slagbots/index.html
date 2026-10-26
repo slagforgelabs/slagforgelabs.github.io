@@ -108,6 +108,25 @@
     </div>
   </details>
 
+  <section class="slag-builder">
+    <h2>Build your own Slagbot</h2>
+    <div>
+      <p>Pick a head, a body, and your colours, then download your Slagbot as a profile picture.</p>
+      <div class="builder-embed">
+        <iframe id="slagbot-builder" src="../tools/slagbot-builder/?embed=1" title="Slagbot Builder" loading="lazy"></iframe>
+      </div>
+      <p class="builder-link"><a href="../tools/slagbot-builder/">Open the builder on its own page</a></p>
+    </div>
+  </section>
+  <script>
+    // Size the builder frame to its content so it never scrolls inside the page.
+    window.addEventListener("message", function (e) {
+      if (e.data && e.data.slagbotHeight) {
+        document.getElementById("slagbot-builder").style.height = e.data.slagbotHeight + "px";
+      }
+    });
+  </script>
+
   <p class="slag-cta">Tell us the role you need filled and we will tell you which Slagbot fits.</p>
 
   <p class="home-cta"><a class="btn" href="mailto:lab@slagforgelabs.ca">Talk to the lab</a></p>

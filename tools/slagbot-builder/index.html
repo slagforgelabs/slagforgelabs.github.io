@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap" rel="stylesheet">
 <style>
 :root{
+  color-scheme:dark;
   --bg:#141218; --panel:#1e1b24; --line:#35303f; --text:#e8e2d4; --dim:#9a92a6; --hot:#ff7a2f;
 }
 *{box-sizing:border-box}
@@ -35,11 +36,15 @@ button.on{border-color:var(--hot);color:#fff}
 button.main{background:var(--hot);border-color:var(--hot);color:#141218}
 button.main:hover{filter:brightness(1.1)}
 .nm{color:var(--text);text-transform:none}
+body.embed{background:transparent}
+body.embed .wrap{padding:0;max-width:none}
+body.embed .back,body.embed h1,body.embed .sub{display:none}
 .sw{width:34px;height:34px;padding:0;border:2px solid var(--line)}
 .sw.on{border-color:#fff;outline:2px solid var(--hot)}
 </style>
 </head>
 <body>
+<script>if(new URLSearchParams(location.search).has("embed"))document.body.classList.add("embed");</script>
 <div class="wrap">
   <a class="back" href="../../index.html">Slagforge Labs</a>
   <h1>Slagbot Builder</h1>
@@ -283,6 +288,11 @@ document.getElementById("dl").onclick=()=>{
 };
 state.unit=Math.floor(Math.random()*10000);
 sync();
+if(document.body.classList.contains("embed")&&window.parent!==window){
+  const report=()=>window.parent.postMessage({slagbotHeight:Math.ceil(document.querySelector(".wrap").getBoundingClientRect().height)+4},"*");
+  new ResizeObserver(report).observe(document.querySelector(".wrap"));
+  window.addEventListener("load",report);
+}
 </script>
 </body>
 </html>

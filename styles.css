@@ -75,8 +75,7 @@ main {
   z-index: 1;
   width: 100%;
   max-width: 22rem;
-  text-align: justify;
-  text-justify: inter-word;
+  text-align: left;
 }
 
 /* Decorative circuit motif: full-bleed, scales with the viewport, sits behind
@@ -841,4 +840,46 @@ details[open] > .slag-body {
   .slag-section > summary::after { transition: none; }
   details[open] > .slag-body { animation: none; }
   .slag-section::details-content { transition: none; }
+}
+
+.slag-builder {
+  padding: 1.15rem 0 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 0.5rem;
+}
+
+.slag-builder > h2 {
+  margin: 0 0 0.6rem;
+  font-family: var(--display);
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--heading);
+}
+
+/* Slagbot Builder embed: breaks out of the narrow text column so the
+   preview and controls can sit side by side on wider screens. */
+.builder-embed {
+  width: min(46rem, calc(100vw - 2rem));
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 1rem 0 0.5rem;
+}
+
+.builder-embed iframe {
+  display: block;
+  width: 100%;
+  height: 900px;
+  border: 0;
+  background: transparent;
+  color-scheme: dark;
+}
+
+.builder-link {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
