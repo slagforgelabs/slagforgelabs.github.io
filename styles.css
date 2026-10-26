@@ -1075,15 +1075,6 @@ details[open] > .slag-body {
 /* Stray Slagbots wandering the margins (stray-bots.js). */
 .stray-bot { z-index: 2; }
 
-.stray-margin {
-  position: absolute;
-  display: none;
-}
-
-@media (min-width: 62rem) {
-  .stray-margin { display: inline-block; }
-}
-
 footer { position: relative; }
 
 /* Sits on the footer rule: the sprite has six empty rows under its feet. */
