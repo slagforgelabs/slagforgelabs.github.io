@@ -903,6 +903,8 @@ details[open] > .slag-body {
   color: var(--heading);
 }
 
+.tool-card img.smooth { image-rendering: auto; }
+.tool-card + .tool-card { border-top: 0; }
 .tool-card p { margin: 0; }
 .tool-card:hover h2 { text-decoration: underline; }
 
