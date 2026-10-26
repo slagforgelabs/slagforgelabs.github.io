@@ -4,11 +4,10 @@
  * page except home, a different crew each visit:
  *
  *  - Drifters float in the foreground, fixed to the window so they stay with
- *    you as you scroll, wandering slowly through the side margins (or along
- *    one edge on phones). Grab one and fling it: throw it hard enough and it
- *    sails off screen, and a new stray wanders in from an edge a little later.
- *    A gentle throw just sends it tumbling back into its margin.
- *  - One more stands just above the footer.
+ *    you as you scroll, wandering slowly across the whole screen. Grab one
+ *    and fling it: throw it hard enough and it sails off screen, and a new
+ *    stray wanders in from an edge a little later. A gentle throw just sends
+ *    it drifting on its way.
  *
  * They bob and blink like the other bots on the site (see .bot in
  * styles.css). Visitors who prefer reduced motion get still bots in the
@@ -63,21 +62,6 @@
     return span;
   }
 
-  /* ---------- Footer bot ---------- */
-  var footer = main.querySelector("footer");
-  if (footer) {
-    var sitterRem = 4.5;
-    var sitter = makeBot(takeId(), sitterRem);
-    sitter.classList.add("stray-sitter");
-    if (getComputedStyle(footer).position === "static") footer.style.position = "relative";
-    footer.style.marginTop = "6rem";   // room for the bot above the footer
-    sitter.style.position = "absolute";
-    sitter.style.bottom = "100%";
-    sitter.style.marginBottom = -(sitterRem * 6 / 40) + "rem";  // six empty rows under its feet
-    sitter.style.left = rand(8, 78).toFixed(1) + "%";
-    footer.appendChild(sitter);
-  }
-
   /* ---------- Drifters ---------- */
 
   // A layer over the page that ignores the pointer except on the bots.
@@ -86,22 +70,15 @@
   layer.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden;";
   document.body.appendChild(layer);
 
-  // Where a drifter may wander, in window coordinates. Wide screens: the side
-  // margins, clear of the text. Narrow screens: hugging one edge.
+  // Where a drifter may wander, in window coordinates: anywhere on screen,
+  // just clear of the very top where the nav sits. Each bot favours its own
+  // half so two of them don't huddle together.
   function zone(side, size) {
     var vw = document.documentElement.clientWidth, vh = window.innerHeight;
-    var r = main.getBoundingClientRect();
-    var gap = 2 * rem;
+    var half = vw / 2;
     var z = { y0: 4.5 * rem, y1: vh - size - rem };
-    if (r.left - gap - size - rem > 0) {
-      if (side === "left") { z.x0 = rem; z.x1 = r.left - gap - size; }
-      else { z.x0 = r.right + gap; z.x1 = vw - size - rem; }
-    } else {
-      // No margin to speak of: tuck mostly into the edge padding.
-      if (side === "left") { z.x0 = -size * 0.35; z.x1 = -size * 0.1; }
-      else { z.x0 = vw - size * 0.9; z.x1 = vw - size * 0.65; }
-      z.y0 = vh * 0.35;
-    }
+    if (side === "left") { z.x0 = rem * 0.5; z.x1 = half + vw * 0.15 - size; }
+    else { z.x0 = half - vw * 0.15; z.x1 = vw - size - rem * 0.5; }
     if (z.x1 < z.x0) z.x1 = z.x0;
     if (z.y1 < z.y0) z.y1 = z.y0;
     return z;
@@ -116,7 +93,7 @@
 
   function spawn(side, enter) {
     var small = !wide();
-    var sizeRem = small ? 3.2 : rand(5.5, 7.5);
+    var sizeRem = small ? 4 : rand(5.5, 7.5);
     var size = sizeRem * rem;
     var wrap = document.createElement("div");
     wrap.style.cssText = "position:absolute;left:0;top:0;pointer-events:auto;cursor:grab;touch-action:none;will-change:transform;";
@@ -208,8 +185,8 @@
       } else {
         // Wander: a slow, smooth drift, pulled gently back into its zone.
         var s = now / 1000 + d.seed;
-        d.vx += (Math.sin(s * 0.37) + Math.sin(s * 0.91)) * 9 * dt;
-        d.vy += (Math.cos(s * 0.29) + Math.sin(s * 0.73)) * 9 * dt;
+        d.vx += (Math.sin(s * 0.37) + Math.sin(s * 0.91)) * 16 * dt;
+        d.vy += (Math.cos(s * 0.29) + Math.sin(s * 0.73)) * 16 * dt;
         if (d.x < z.x0) d.vx += (z.x0 - d.x) * 1.6 * dt;
         if (d.x > z.x1) d.vx -= (d.x - z.x1) * 1.6 * dt;
         if (d.y < z.y0) d.vy += (z.y0 - d.y) * 1.6 * dt;
@@ -235,18 +212,22 @@
   }
 
   if (reduce) {
-    // Still bots, one per margin, only where there is room.
+    // Still bots, one in each side margin, only where there is room.
     if (wide()) {
-      ["left", "right"].slice(0, Math.random() < 0.4 ? 1 : 2).forEach(function (side) {
+      ["left", "right"].forEach(function (side) {
         var d = spawn(side, false);
+        var vw = document.documentElement.clientWidth;
+        d.x = side === "left" ? 2 * rem : vw - d.size - 2 * rem;
+        d.y = rand(6 * rem, window.innerHeight - d.size - 2 * rem);
         d.el.style.cursor = "default";
+        draw(d);
       });
     }
     return;
   }
 
   var sides = Math.random() < 0.5 ? ["left", "right"] : ["right", "left"];
-  var count = wide() ? (Math.random() < 0.4 ? 1 : 2) : 1;
+  var count = wide() ? 2 : 1;
   for (var m = 0; m < count; m++) spawn(sides[m], false);
   requestAnimationFrame(tick);
 })();
