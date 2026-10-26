@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slagbot Builder | Slagforge Labs</title>
+<meta name="description" content="Build your own 16 bit Slagbot and download it as a profile picture.">
+<link rel="icon" href="../../images/favicon.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141218; --panel:#1e1b24; --line:#35303f; --text:#e8e2d4; --dim:#9a92a6; --hot:#ff7a2f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+.back{display:inline-block;color:var(--dim);font-family:'Silkscreen',monospace;font-size:13px;text-decoration:none;margin-bottom:16px}
+.back:hover{color:var(--hot)}
+h1{font-family:'Silkscreen',monospace;font-weight:400;font-size:28px;margin:0 0 4px;letter-spacing:1px}
+.sub{color:var(--dim);margin:0 0 24px;font-size:14px}
+.grid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:24px}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+.stage{align-self:start;background:var(--panel);border:1px solid var(--line);padding:16px;text-align:center}
+canvas{width:100%;max-width:308px;aspect-ratio:1;image-rendering:pixelated;image-rendering:crisp-edges;display:block;margin:0 auto;
+  background:repeating-conic-gradient(#2a2631 0 25%,#23202a 0 50%) 0 0/16px 16px}
+.unit{font-family:'Silkscreen',monospace;margin:12px 0 0;font-size:15px;color:var(--hot)}
+.btns{display:flex;gap:8px;margin-top:14px}
+.btns button{flex:1}
+.ctrl{margin-bottom:18px}
+.ctrl h2{font-family:'Silkscreen',monospace;font-weight:400;font-size:14px;margin:0 0 8px;color:var(--dim);letter-spacing:1px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+button{font-family:'Silkscreen',monospace;font-size:13px;background:#2a2631;color:var(--text);border:2px solid var(--line);padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--dim)}
+button.on{border-color:var(--hot);color:#fff}
+button.main{background:var(--hot);border-color:var(--hot);color:#141218}
+button.main:hover{filter:brightness(1.1)}
+.nm{color:var(--text);text-transform:none}
+.sw{width:34px;height:34px;padding:0;border:2px solid var(--line)}
+.sw.on{border-color:#fff;outline:2px solid var(--hot)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../../index.html">Slagforge Labs</a>
+  <h1>Slagbot Builder</h1>
+  <p class="sub">Build your own 16 bit Slagbot and download it for your profile picture.</p>
+  <div class="grid">
+    <div class="stage">
+      <canvas id="cv" width="32" height="32"></canvas>
+      <p class="unit" id="unit"></p>
+      <div class="btns">
+        <button id="rand">Randomize</button>
+        <button id="dl" class="main">Download</button>
+      </div>
+    </div>
+    <div id="controls"></div>
+  </div>
+</div>
+<script>
+// Pixel keys: H highlight, M main, m shadow, A accent, a accent shadow,
+// E glow, e glow dim, W white, K dark metal. Outline is generated automatically.
+const HEADS = {
+  Visor: [
+    "..HHHHHHHHHH..",
+    ".HMMMMMMMMMMm.",
+    "HMMMMMMMMMMMMm",
+    "HMKKKKKKKKKKMm",
+    "HMKEEEKKEEEKMm",
+    "HMKeeeKKeeeKMm",
+    "HMKKKKKKKKKKMm",
+    "MMMMMMMMMMMMmm",
+    "MMMMKaKaKaMMmm",
+    ".mmmmmmmmmmmm.",
+    "..mmmmmmmmmm.."],
+  Cyclops: [
+    "....HHHHHH....",
+    "..HHMMMMMMmm..",
+    ".HMMMMMMMMMMm.",
+    ".HMMMKKKKMMMm.",
+    "HMMMKEEEeKMMMm",
+    "HMMMKEWEeKMMMm",
+    "HMMMKEEeeKMMMm",
+    "HMMMMKKKKMMMMm",
+    ".MMMMMMMMMMmm.",
+    ".mAAAAAAAAAAm.",
+    "..mmmmmmmmmm.."],
+  Furnace: [
+    "HHHHHHHHHHHHHM",
+    "HMMMMMMMMMMMMm",
+    "HMKKKMMMMKKKMm",
+    "HMKEEMMMMEEKMm",
+    "HMMKKMMMMKKMMm",
+    "HMMMMMMMMMMMMm",
+    "HMKKKKKKKKKKMm",
+    "HMKEeEeEeEeKMm",
+    "HMKeEeEeEeEKMm",
+    "MMKKKKKKKKKKmm",
+    "mmmmmmmmmmmmmm"]
+};
+const BODIES = {
+  Worker: [
+    "....KKKKKKKK....",
+    ".AA.HMMMMMMm.AA.",
+    ".HA.HMMMMMMm.Am.",
+    ".HA.HMAAAAMm.Am.",
+    ".HM.HMAEEAMm.Mm.",
+    ".HM.HMAEEAMm.Mm.",
+    ".HM.HMAAAAMm.Mm.",
+    ".KK.HMMMMMMm.KK.",
+    ".KK.KKKKKKKK.KK.",
+    "....HMm..HMm....",
+    "....HMm..HMm....",
+    "...KKKK..KKKK..."],
+  Crawler: [
+    ".....KKKKKK.....",
+    "AAA.HMMMMMMm.AAA",
+    "AAa.HMMMMMMm.AAa",
+    "MMm.HMMMMMMm.MMm",
+    "MMm.HMKEEKMm.MMm",
+    "MMm.HMKEEKMm.MMm",
+    "MMm.HMMMMMMm.MMm",
+    "KKK.HMMMMMMm.KKK",
+    "KKK.mmmmmmmm.KKK",
+    "..KKKKKKKKKKKK..",
+    "..KaKaKaKaKaKK..",
+    "...KKKKKKKKKK..."],
+  Hover: [
+    "......KKKK......",
+    "....HMMMMMMm....",
+    ".AA.HMAAAAMm.AA.",
+    ".Aa.HMAEEAMm.Aa.",
+    ".KK.HMAEEAMm.KK.",
+    "....HMMMMMMm....",
+    ".....HMMMMm.....",
+    "......HMMm......",
+    ".......Mm.......",
+    ".....aEEEEa.....",
+    "......EEEe......",
+    ".......Ee......."]
+};
+const TOPS = {
+  None: {x:0, rows:[]},
+  Antenna: {x:15, rows:["EE","KK","KK"]},
+  Horns: {x:11, y:1, rows:["A........A","Aa......aA",".Aa....aA."]},
+  Crown: {x:11, rows:["A...AA...A","AA.AAAA.AA","AAAAAAAAAA"]}
+};
+const PLATE = {Rust:"#b5523b",Steel:"#7d8a99",Slag:"#4a4550",Copper:"#c97b3f",Nickel:"#6a9a7a",Bone:"#d8cfb8",Cobalt:"#4a5fa8"};
+const TRIM  = {Gold:"#e0b23c",Brass:"#b08d4a",Blood:"#a3232e",Teal:"#2e9c9a",Bone:"#e8e0c8",Iron:"#5b5763"};
+const GLOW  = {Molten:"#ff7a2f",Cyan:"#3ee8ff",Toxic:"#8cff3a",Red:"#ff3344",Violet:"#b45cff",White:"#f4f4ff"};
+const BACK  = {
+  Transparent:null,
+  Pit:["#1a1620","#5a2a1a"],
+  Molten:["#2a0f0a","#ff7a2f"],
+  Night:["#0c0f1e","#3a4a7a"],
+  Bone:["#d8cfb8","#d8cfb8"],
+  Steel:["#3a3f48","#7d8a99"],
+  "Slag pile":"slag"
+};
+
+// Molten slag pile scene: night sky, dark slag heaps, a glowing pour running down the right heap
+function drawSlag(c,N){
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    const lvl=(y/(N-1))*16 + (x>20?3:0);
+    c.fillStyle = lvl>BAYER[y%4][x%4]+3 ? "#3a1410" : "#120d18";
+    c.fillRect(x,y,1,1);
+  }
+  const top=x=>{
+    const r = x<=26 ? 16+(26-x)*1.08 : 16+(x-26)*1.2;   // right heap
+    const l = 20+Math.abs(x-3)*0.8;                       // left heap
+    return Math.round(Math.min(r,l,29));
+  };
+  for(let x=0;x<N;x++){
+    const t=top(x);
+    for(let y=t;y<N;y++){
+      c.fillStyle = y===t ? "#5a4650" : ((x+y)%5===0 ? "#3a3038" : "#241c24");
+      c.fillRect(x,y,1,1);
+    }
+  }
+  // the pour
+  for(let x=26;x<N;x++){
+    const t=top(x);
+    [["#ff7a2f",0],["#ffd54a",1],["#ff7a2f",2],["#b8361a",3]].forEach(([col,d])=>{c.fillStyle=col;c.fillRect(x,t+d,1,1);});
+  }
+  [["#ffd54a",26,15],["#ff7a2f",25,16],["#ff7a2f",27,15],["#b8361a",24,17]].forEach(([col,x,y])=>{c.fillStyle=col;c.fillRect(x,y,1,1);});
+  // glow pooling at the base on the right edge
+  for(let y=24;y<30;y++){c.fillStyle=y%2?"#b8361a":"#ff7a2f";c.fillRect(31,y,1,1);}
+  // embers
+  [["#ffd54a",28,11],["#ff7a2f",30,9],["#ff7a2f",27,13],["#b8361a",29,6],["#ffd54a",31,13],["#b8361a",25,10]]
+    .forEach(([col,x,y])=>{c.fillStyle=col;c.fillRect(x,y,1,1);});
+}
+
+const state = {head:"Visor", body:"Worker", top:"Antenna", plate:"Rust", trim:"Gold", glow:"Molten", back:"Pit", unit:0};
+
+function hex(h){h=h.replace("#","");return [0,2,4].map(i=>parseInt(h.substr(i,2),16));}
+function mix(c,t,amt){const a=hex(c),b=hex(t);return "rgb("+a.map((v,i)=>Math.round(v+(b[i]-v)*amt)).join(",")+")";}
+const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+
+function render(){
+  const N=32, grid=Array.from({length:N},()=>Array(N).fill(null));
+  const oy=2;
+  const put=(rows,x,y)=>rows.forEach((r,j)=>[...r].forEach((ch,i)=>{if(ch!=="."){const X=x+i,Y=y+j;if(X>=0&&X<N&&Y>=0&&Y<N)grid[Y][X]=ch;}}));
+  const top=TOPS[state.top];
+  put(top.rows, top.x, oy+(top.y||0));
+  put(BODIES[state.body], 8, oy+14);
+  put(HEADS[state.head], 9, oy+3);
+
+  const p=PLATE[state.plate], t=TRIM[state.trim], g=GLOW[state.glow];
+  const pal={H:mix(p,"#ffffff",.28),M:p,m:mix(p,"#000000",.35),A:t,a:mix(t,"#000000",.35),
+             E:g,e:mix(g,"#000000",.4),W:"#ffffff",K:"#2f2c36",O:"#100e14"};
+
+  // auto outline
+  const out=grid.map(r=>r.slice());
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    if(grid[y][x])continue;
+    if([[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>grid[y+dy]&&grid[y+dy][x+dx]))out[y][x]="O";
+  }
+
+  const cv=document.getElementById("cv"), c=cv.getContext("2d");
+  c.clearRect(0,0,N,N);
+  const bg=BACK[state.back];
+  if(bg==="slag") drawSlag(c,N);
+  else if(bg){
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+      const lvl=(y/(N-1))*16;
+      c.fillStyle = lvl>BAYER[y%4][x%4]+0.5 ? bg[1] : bg[0];
+      c.fillRect(x,y,1,1);
+    }
+  }
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    const k=out[y][x]; if(!k)continue;
+    c.fillStyle=pal[k]; c.fillRect(x,y,1,1);
+  }
+  document.getElementById("unit").textContent="Slagbot Unit "+String(state.unit).padStart(4,"0");
+}
+
+function group(label,key,opts,swatch){
+  const d=document.createElement("div");d.className="ctrl";
+  d.innerHTML="<h2>"+label+(swatch?' <span class="nm" data-for="'+key+'"></span>':"")+"</h2>";
+  const o=document.createElement("div");o.className="opts";
+  Object.keys(opts).forEach(name=>{
+    const b=document.createElement("button");
+    b.dataset.key=key;b.dataset.val=name;b.title=name;
+    if(swatch){
+      b.className="sw";
+      const v=opts[name];
+      b.style.background = v===null ? "repeating-conic-gradient(#3a3542 0 25%,#23202a 0 50%) 0 0/10px 10px"
+        : v==="slag" ? "linear-gradient(160deg,#120d18 40%,#ff7a2f 55%,#241c24 62%)"
+        : Array.isArray(v) ? "linear-gradient("+v[0]+","+v[1]+")" : v;
+    } else b.textContent=name;
+    b.onclick=()=>{state[key]=name;sync();};
+    o.appendChild(b);
+  });
+  d.appendChild(o);return d;
+}
+function sync(){
+  document.querySelectorAll("#controls button").forEach(b=>b.classList.toggle("on",state[b.dataset.key]===b.dataset.val));
+  document.querySelectorAll(".nm").forEach(n=>n.textContent="· "+state[n.dataset.for]);
+  render();
+}
+const ctl=document.getElementById("controls");
+ctl.append(
+  group("Head","head",HEADS),
+  group("Body","body",BODIES),
+  group("Topper","top",TOPS),
+  group("Plating","plate",PLATE,true),
+  group("Trim","trim",TRIM,true),
+  group("Core glow","glow",GLOW,true),
+  group("Backdrop","back",BACK,true)
+);
+const pick=o=>{const k=Object.keys(o);return k[Math.floor(Math.random()*k.length)];};
+document.getElementById("rand").onclick=()=>{
+  Object.assign(state,{head:pick(HEADS),body:pick(BODIES),top:pick(TOPS),plate:pick(PLATE),
+    trim:pick(TRIM),glow:pick(GLOW),back:pick(BACK),unit:Math.floor(Math.random()*10000)});
+  sync();
+};
+document.getElementById("dl").onclick=()=>{
+  const S=512, big=document.createElement("canvas");big.width=big.height=S;
+  const b=big.getContext("2d");b.imageSmoothingEnabled=false;
+  b.drawImage(document.getElementById("cv"),0,0,S,S);
+  const a=document.createElement("a");
+  a.download="slagbot_unit_"+String(state.unit).padStart(4,"0")+".png";
+  a.href=big.toDataURL("image/png");a.click();
+};
+state.unit=Math.floor(Math.random()*10000);
+sync();
+</script>
+</body>
+</html>
