@@ -422,8 +422,96 @@ footer p {
   margin: -1.5rem 0 2.25rem;
 }
 
-/* Article header plate: flat 3:1 crop of the engraving, breaking out of the
-   narrow text column so the detail survives. No scrim, no overlay. */
+/* Article hero: full-bleed banner at page width with the title laid over the
+   plate. Flat crop, no frame. The plate drifts against the scroll using a
+   native scroll-driven animation, so there is no JS on the page. */
+.post-hero {
+  position: relative;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  height: clamp(20rem, 52vh, 34rem);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background: #0b0d0f;
+  line-height: 0;
+}
+
+.post-hero > img {
+  position: absolute;
+  top: -8%;
+  left: 0;
+  width: 100%;
+  height: 116%;
+  object-fit: cover;
+  object-position: center;
+  will-change: transform;
+}
+
+/* Symmetric scrim: dark at both edges so the centred title reads evenly. */
+.post-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.62) 0%,
+    rgba(0,0,0,0.42) 35%,
+    rgba(0,0,0,0.42) 65%,
+    rgba(0,0,0,0.62) 100%
+  );
+}
+
+.post-hero-inner {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.post-hero h1 {
+  margin: 0 auto;
+  max-width: 34rem;
+  font-size: clamp(1.5rem, 3.4vw, 2.7rem);
+  line-height: 1.12;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--heading);
+  text-shadow: 0 2px 20px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9);
+}
+
+/* Parallax: the plate travels slower than the page. Where the browser has
+   scroll timelines the drift is native and free; everywhere else it sits
+   still and nothing breaks. */
+@keyframes heroDrift {
+  from { transform: translateY(-2.4%) scale(1.02); }
+  to   { transform: translateY(2.4%) scale(1.02); }
+}
+
+@supports (animation-timeline: scroll()) {
+  .post-hero > img {
+    animation: heroDrift linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 100vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-hero > img { animation: none; transform: none; }
+}
+
+/* Tuck the date up under the hero. */
+.post-hero + .post-meta { margin-top: 0; }
+
+/* Legacy 3:1 plate, kept for older posts. No scrim, no overlay. */
 .post-header {
   display: block;
   width: min(calc(100vw - 2rem), 42rem);
