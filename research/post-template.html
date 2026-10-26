@@ -10,7 +10,7 @@
 <meta property="og:title" content="Post Title — Slagforge Labs">
 <meta property="og:description" content="">
 <meta property="og:url" content="https://slagforgelabs.ca/research/post-template.html">
-<meta property="og:image" content="https://slagforgelabs.ca/images/logo.png">
+<meta property="og:image" content="https://slagforgelabs.ca/images/POST-header.jpg">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Post Title — Slagforge Labs">
@@ -89,10 +89,30 @@
   </nav>
   <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
 
+  <!-- Wide header plate. Crop at 3:1, keep the interesting part centre-frame.
+       Stored in ../images/ root so the og:image path stays clean. -->
+  <figure class="post-header">
+    <img src="../images/POST-header.jpg" alt="Describe the engraving in one plain sentence" width="1800" height="600">
+  </figure>
+
   <h1>Post Title</h1>
   <p class="post-meta">Date</p>
 
   <p>Body text.</p>
+
+  <h2>Section heading</h2>
+  <p>Body text.</p>
+
+  <!-- In-body motif. A different plate from the same series as the header,
+       3:2 or 1:1, pulled from ../images/art/treated/. Sits just before the
+       closing paragraph so it lands as part of the argument, not decoration.
+       post-figure--narrow pins it to the text measure. -->
+  <figure class="post-figure post-figure--narrow">
+    <img src="../images/art/treated/POST-motif-3x2.jpg" alt="Describe the engraving in one plain sentence" width="1400" height="933">
+    <figcaption>Plate title. One short line tying the image to the point being made.</figcaption>
+  </figure>
+
+  <p>Closing paragraph. Land the argument here.</p>
 
   <div class="sources">
     <h2>Sources</h2>
