@@ -51,7 +51,7 @@ body.embed .back,body.embed h1,body.embed .sub{display:none}
   <p class="sub">Build your own 16 bit Slagbot and download it for your profile picture.</p>
   <div class="grid">
     <div class="stage">
-      <canvas id="cv" width="32" height="32"></canvas>
+      <canvas id="cv" width="40" height="40"></canvas>
       <p class="unit" id="unit"></p>
       <div class="btns">
         <button id="rand">Randomize</button>
@@ -164,15 +164,16 @@ const BACK  = {
 
 // Molten slag pile scene: night sky, dark slag heaps, a glowing pour running down the right heap
 function drawSlag(c,N){
+  const d=N-32; // scene was drawn for 32px; shift right and down to stay in the corner
   for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-    const lvl=(y/(N-1))*16 + (x>20?3:0);
+    const lvl=(y/(N-1))*16 + (x>20+d?3:0);
     c.fillStyle = lvl>BAYER[y%4][x%4]+3 ? "#3a1410" : "#120d18";
     c.fillRect(x,y,1,1);
   }
   const top=x=>{
-    const r = x<=26 ? 16+(26-x)*1.08 : 16+(x-26)*1.2;   // right heap
-    const l = 20+Math.abs(x-3)*0.8;                       // left heap
-    return Math.round(Math.min(r,l,29));
+    const r = x<=26+d ? 16+d+(26+d-x)*1.08 : 16+d+(x-26-d)*1.2;  // right heap
+    const l = 20+d+Math.abs(x-3)*0.8;                             // left heap
+    return Math.round(Math.min(r,l,N-3));
   };
   for(let x=0;x<N;x++){
     const t=top(x);
@@ -181,17 +182,15 @@ function drawSlag(c,N){
       c.fillRect(x,y,1,1);
     }
   }
-  // the pour
-  for(let x=26;x<N;x++){
+  const px=(col,x,y)=>{c.fillStyle=col;c.fillRect(x,y,1,1);};
+  for(let x=26+d;x<N;x++){
     const t=top(x);
-    [["#ff7a2f",0],["#ffd54a",1],["#ff7a2f",2],["#b8361a",3]].forEach(([col,d])=>{c.fillStyle=col;c.fillRect(x,t+d,1,1);});
+    [["#ff7a2f",0],["#ffd54a",1],["#ff7a2f",2],["#b8361a",3]].forEach(([col,k])=>px(col,x,t+k));
   }
-  [["#ffd54a",26,15],["#ff7a2f",25,16],["#ff7a2f",27,15],["#b8361a",24,17]].forEach(([col,x,y])=>{c.fillStyle=col;c.fillRect(x,y,1,1);});
-  // glow pooling at the base on the right edge
-  for(let y=24;y<30;y++){c.fillStyle=y%2?"#b8361a":"#ff7a2f";c.fillRect(31,y,1,1);}
-  // embers
+  [["#ffd54a",26,15],["#ff7a2f",25,16],["#ff7a2f",27,15],["#b8361a",24,17]].forEach(([col,x,y])=>px(col,x+d,y+d));
+  for(let y=24+d;y<N-2;y++)px(y%2?"#b8361a":"#ff7a2f",N-1,y);
   [["#ffd54a",28,11],["#ff7a2f",30,9],["#ff7a2f",27,13],["#b8361a",29,6],["#ffd54a",31,13],["#b8361a",25,10]]
-    .forEach(([col,x,y])=>{c.fillStyle=col;c.fillRect(x,y,1,1);});
+    .forEach(([col,x,y])=>px(col,x+d,y+d));
 }
 
 const state = {head:"Visor", body:"Worker", top:"Antenna", plate:"Rust", trim:"Gold", glow:"Molten", back:"Pit", unit:0};
@@ -201,13 +200,13 @@ function mix(c,t,amt){const a=hex(c),b=hex(t);return "rgb("+a.map((v,i)=>Math.ro
 const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 
 function render(){
-  const N=32, grid=Array.from({length:N},()=>Array(N).fill(null));
-  const oy=2;
+  const N=40, grid=Array.from({length:N},()=>Array(N).fill(null));
+  const ox=4, oy=6;
   const put=(rows,x,y)=>rows.forEach((r,j)=>[...r].forEach((ch,i)=>{if(ch!=="."){const X=x+i,Y=y+j;if(X>=0&&X<N&&Y>=0&&Y<N)grid[Y][X]=ch;}}));
   const top=TOPS[state.top];
-  put(top.rows, top.x, oy+(top.y||0));
-  put(BODIES[state.body], 8, oy+14);
-  put(HEADS[state.head], 9, oy+3);
+  put(top.rows, ox+top.x, oy+(top.y||0));
+  put(BODIES[state.body], ox+8, oy+14);
+  put(HEADS[state.head], ox+9, oy+3);
 
   const p=PLATE[state.plate], t=TRIM[state.trim], g=GLOW[state.glow];
   const pal={H:mix(p,"#ffffff",.28),M:p,m:mix(p,"#000000",.35),A:t,a:mix(t,"#000000",.35),
@@ -279,7 +278,7 @@ document.getElementById("rand").onclick=()=>{
   sync();
 };
 document.getElementById("dl").onclick=()=>{
-  const S=512, big=document.createElement("canvas");big.width=big.height=S;
+  const S=640, big=document.createElement("canvas");big.width=big.height=S;
   const b=big.getContext("2d");b.imageSmoothingEnabled=false;
   b.drawImage(document.getElementById("cv"),0,0,S,S);
   const a=document.createElement("a");

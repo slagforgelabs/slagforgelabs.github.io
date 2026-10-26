@@ -75,6 +75,12 @@ main {
   z-index: 1;
   width: 100%;
   max-width: 22rem;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Headings, list labels and short lines read better ragged than stretched. */
+main h2, main h3, .slag-section > summary, .slag-list dt, .slag-list dd {
   text-align: left;
 }
 
@@ -151,6 +157,10 @@ body.bg-video-on .motif { display: none; }
 }
 
 nav {
+  width: min(36rem, calc(100vw - 2rem));
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: var(--mono);
   font-size: 0.66rem;
   letter-spacing: 0.06em;
