@@ -153,14 +153,21 @@ body.bg-video-on .motif { display: none; }
 
 nav {
   font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   text-align: center;
   margin: 0 0 2.5rem;
 }
 
-nav a { margin: 0 0.6rem; }
+nav a { margin: 0 0.22rem; }
+
+/* Five items across a 22rem column. Tighten a little on narrow screens so
+   the row still holds one line. */
+@media (max-width: 30rem) {
+  nav { font-size: 0.6rem; letter-spacing: 0.04em; }
+  nav a { margin: 0 0.18rem; }
+}
 
 .brand-logo {
   display: block;
@@ -668,4 +675,170 @@ footer p {
   text-align: center;
   max-width: 44rem;
   margin: 0 auto 2.25rem;
+}
+
+/* --- Buttons ------------------------------------------------------------
+   One flat button, no rounding, no glow. Used for the home page call to
+   action and the Slagbots page contact line. */
+.home-cta {
+  text-align: center;
+  margin: 2.25rem 0 0;
+}
+
+.slag-cta {
+  margin-top: 2.25rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  border: 1px solid var(--heading);
+  border-radius: 0;
+  color: var(--heading);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background-color 160ms linear, color 160ms linear;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--heading);
+  color: #000;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+
+/* --- Slagbots page: collapsible sections --------------------------------
+   Native details and summary, so the page opens and closes with no script
+   and nothing to request. The marker is a plus that turns as the section
+   opens; the body fades down into place. */
+.slag-section {
+  border-top: 1px solid var(--rule);
+  padding: 0.75rem 0 0.15rem;
+}
+
+.slag-section:last-of-type {
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 0.5rem;
+}
+
+.slag-section > summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--display);
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--heading);
+}
+
+.slag-section > summary::-webkit-details-marker { display: none; }
+.slag-section > summary::marker { content: ""; }
+
+.slag-section > summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 0.8;
+  color: var(--footer);
+  transition: transform 260ms ease, color 260ms ease;
+}
+
+.slag-section[open] > summary::after {
+  transform: rotate(45deg);
+  color: var(--heading);
+}
+
+.slag-section > summary:hover::after,
+.slag-section > summary:focus-visible::after { color: var(--heading); }
+
+.slag-section > summary:focus-visible {
+  outline: 2px solid var(--heading);
+  outline-offset: 4px;
+}
+
+.slag-body {
+  padding: 0.35rem 0 1.25rem;
+}
+
+details[open] > .slag-body {
+  animation: slag-reveal 280ms ease both;
+}
+
+@keyframes slag-reveal {
+  from { opacity: 0; transform: translateY(-0.45rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Where the engine supports it, the panel itself grows and shrinks instead
+   of snapping. Elsewhere the fade above still carries the motion. */
+@supports selector(::details-content) {
+  :root { interpolate-size: allow-keywords; }
+
+  .slag-section::details-content {
+    block-size: 0;
+    overflow: hidden;
+    content-visibility: hidden;
+    transition: block-size 280ms ease, content-visibility 280ms allow-discrete;
+  }
+
+  .slag-section[open]::details-content {
+    block-size: auto;
+    content-visibility: visible;
+  }
+
+  details[open] > .slag-body { animation: none; }
+}
+
+.slag-list {
+  margin: 0.75rem 0 0;
+}
+
+.slag-list dt {
+  font-family: var(--display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 1.15rem 0 0.1rem;
+}
+
+.slag-list dd {
+  margin: 0;
+}
+
+.slag-body h3 {
+  font-family: var(--display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 1.6rem 0 0.3rem;
+}
+
+.slag-body > h3:first-child { margin-top: 0.35rem; }
+
+.slag-body > p:last-child { margin-bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slag-section > summary::after { transition: none; }
+  details[open] > .slag-body { animation: none; }
+  .slag-section::details-content { transition: none; }
 }

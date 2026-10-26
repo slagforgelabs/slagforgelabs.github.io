@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Systems — Slagforge Labs</title>
-<meta name="description" content="Slagforge Labs builds and runs AI systems two ways: hosted integration for lean budgets, dedicated local inference for work that cannot leave the building.">
+<title>Systems &middot; Slagforge Labs</title>
+<meta name="description" content="Slagbot Remote, Slagbot Local, and Slagboss. The hardware options, rented versus local inference, and how a Slagboss runs a crew of smaller bots.">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Systems — Slagforge Labs">
-<meta property="og:description" content="Hosted integration or dedicated local inference. We build the system, install it, train your people, and support it after.">
+<meta property="og:title" content="Systems &middot; Slagforge Labs">
+<meta property="og:description" content="Remote, Local, or Slagboss. Rented inference or your own machine, sized to the work.">
 <meta property="og:url" content="https://slagforgelabs.ca/systems/">
 <meta property="og:image" content="https://slagforgelabs.ca/images/logo.png">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Systems — Slagforge Labs">
-<meta name="twitter:description" content="Hosted integration or dedicated local inference. Built, installed, and supported.">
+<meta name="twitter:title" content="Systems &middot; Slagforge Labs">
+<meta name="twitter:description" content="Remote, Local, or Slagboss. Rented inference or your own machine.">
 <meta name="twitter:image" content="https://slagforgelabs.ca/images/logo.png">
 
 <link rel="icon" href="../images/favicon.png" type="image/png">
@@ -32,74 +32,33 @@
 
 <main>
   <nav>
-    <a href="index.html">Systems</a>
+    <a href="../index.html">Home</a>
+    <a href="../slagbots/index.html">Slagbots</a>
+    <a href="../services/index.html">Services</a>
+    <a href="../systems/index.html">Systems</a>
     <a href="../research/index.html">Research</a>
-    <a href="../contact/index.html">Contact</a>
   </nav>
   <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
-  <h1>INFERENCE INFRASTRUCTURE. OWNED, NOT RENTED.</h1>
+  <h1>YOUR AGENT. YOUR MACHINE.</h1>
 
-  <p>Slagforge builds AI systems that run where the work happens. Two routes, one standard. Hosted integration for lean budgets. Dedicated local inference for work that cannot leave the building. Most clients land between the two, and we price to the order, not to a menu.</p>
+  <p>A Slagbot runs where you can see it. We size the machine to the work, or point it at rented inference when that makes more sense. Either way the bot, its memory, and its files stay with you.</p>
 
-  <h2>Hosted Integration</h2>
-  <p>Plug into frontier models through a hosted API. We wire the fallback chain, cap the spend, and keep it running. No capital outlay. No rack. The right call for teams that need capability now and volume they can meter.</p>
+  <h2>Hardware</h2>
+  <p>A Slagbot Remote needs very little. A small desktop machine is enough. When the work grows, or when nothing may leave the building, we spec and build a dedicated machine and install the whole system on site. Configurations are scoped per engagement and kept confidential.</p>
 
-  <h2>Dedicated Inference</h2>
-  <p>For work that cannot leave the building, or volume that makes hosted billing look silly. We specify, source, build, and commission the box. You own the hardware. Traffic stays inside your walls. No per-token invoice and no third party in the loop. Configurations are scoped per engagement and kept confidential.</p>
+  <h2>Rented Or Local</h2>
+  <p>Rented inference gives you a capable model without buying serious hardware. It suits steady work and quick starts, and it costs nothing up front. Local inference puts the models on your own machine, so nothing leaves your building unless you say so, with no per token invoice and no third party in the loop. Most clients run both lanes: local for sensitive work, rented for burst.</p>
 
-  <h2>The Hybrid</h2>
-  <p>Hosted for burst, local for sensitive. One system, two lanes. Priced to the order because the order decides the mix.</p>
-
-  <h2>Established Stack</h2>
-  <p>We run this stack in production. Local inference, quantized models, retrieval pipelines, and agent tooling. This is not a pilot program and it is not a proof of concept. We have been building machines since the late nineties, gaming rigs first, then workstations and servers. A hardware shop that learned to train models, not a software company that bought a GPU.</p>
-
-  <h2>Systems We Run</h2>
-  <p class="systems-note">We specialize in OpenClaw and Hermes deployments. Beyond those we work daily with LM Studio, Ollama and vLLM, and we build against OpenRouter, Hugging Face and PyTorch where the job calls for it.</p>
-
-  <div class="systems-grid">
-    <a class="system-badge" href="https://openclaw.ai" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/openclaw.svg')" aria-hidden="true"></span>
-      <span class="system-name">OpenClaw</span>
-    </a>
-    <a class="system-badge" href="https://hermes-agent.nousresearch.com" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/nous-mark.png')" aria-hidden="true"></span>
-      <span class="system-name">Hermes</span>
-    </a>
-    <a class="system-badge" href="https://lmstudio.ai" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/lmstudio.svg')" aria-hidden="true"></span>
-      <span class="system-name">LM Studio</span>
-    </a>
-    <a class="system-badge" href="https://ollama.com" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/ollama.svg')" aria-hidden="true"></span>
-      <span class="system-name">Ollama</span>
-    </a>
-    <a class="system-badge" href="https://vllm.ai" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/vllm.svg')" aria-hidden="true"></span>
-      <span class="system-name">vLLM</span>
-    </a>
-    <a class="system-badge" href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/openrouter.svg')" aria-hidden="true"></span>
-      <span class="system-name">OpenRouter</span>
-    </a>
-    <a class="system-badge" href="https://huggingface.co" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/huggingface.svg')" aria-hidden="true"></span>
-      <span class="system-name">Hugging Face</span>
-    </a>
-    <a class="system-badge" href="https://pytorch.org" target="_blank" rel="noopener noreferrer">
-      <span class="system-icon" style="--icon:url('images/logos/pytorch.svg')" aria-hidden="true"></span>
-      <span class="system-name">PyTorch</span>
-    </a>
-  </div>
-
-  <p class="model-links">We benchmark current frontier models head to head, hosted and local. Independent comparisons: <a href="https://artificialanalysis.ai" target="_blank" rel="noopener noreferrer">Artificial Analysis</a> &middot; <a href="https://lmarena.ai" target="_blank" rel="noopener noreferrer">LMArena</a> &middot; <a href="https://epoch.ai/benchmarks" target="_blank" rel="noopener noreferrer">Epoch AI</a></p>
+  <h2>Slagboss</h2>
+  <p>A Slagboss is a lead agent that runs a crew of smaller local Slagbots. It assigns the work, checks what comes back, and reports to one owner. You get one point of contact and a whole team behind it, all on your own hardware.</p>
 
   <h2>After Delivery</h2>
-  <p>Build, install, train your people, support the system. Support terms are set per engagement. The handoff starts the relationship; it does not end it.</p>
+  <p>Build, install, train your people, support the system. Support terms are set per engagement. We have been building machines since the late nineties, gaming rigs first, then workstations and servers. A hardware shop that learned to train models, not a software company that bought a processor.</p>
 
   <footer>
     <p>Every project starts with a conversation.</p>
     <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
-    <p><a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a></p>
+    <p><a href="../contact/index.html">Contact</a> &nbsp;/&nbsp; <a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a></p>
     <p>Sudbury, Ontario Canada.</p>
     <p>&copy; 2026 Slagforge Labs. All rights reserved.</p>
   </footer>
