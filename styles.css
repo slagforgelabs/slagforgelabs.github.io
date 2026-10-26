@@ -1030,13 +1030,6 @@ details[open] > .slag-body {
   color: var(--footer);
 }
 
-.bot-lineup figcaption span {
-  display: block;
-  margin-top: 0.15rem;
-  color: var(--footer);
-  font-size: 0.62rem;
-}
-
 .lore strong {
   font-family: var(--display);
   font-weight: 700;
@@ -1054,4 +1047,27 @@ details[open] > .slag-body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--heading);
+}
+
+.slag-pour {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.slag-pour canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 120 / 64;
+  image-rendering: pixelated;
+  border: 1px solid var(--rule);
+}
+
+.slag-pour figcaption {
+  margin-top: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--footer);
 }
