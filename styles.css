@@ -171,11 +171,35 @@ nav {
 
 nav a { margin: 0 0.22rem; }
 
-/* Five items across a 22rem column. Tighten a little on narrow screens so
-   the row still holds one line. */
-@media (max-width: 30rem) {
-  nav { font-size: 0.6rem; letter-spacing: 0.04em; }
-  nav a { margin: 0 0.18rem; }
+nav a[aria-current="page"] { color: var(--text); }
+
+/* Phones: the six links become a tidy three by two grid of tap targets
+   instead of one squeezed row. */
+@media (max-width: 34rem) {
+  nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    width: 100%;
+    left: 0;
+    transform: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  nav a {
+    margin: 0;
+    padding: 0.8rem 0;
+    background: var(--bg);
+    text-decoration: none;
+  }
+
+  nav a[aria-current="page"] {
+    color: var(--bg);
+    background: var(--heading);
+  }
 }
 
 .brand-logo {
