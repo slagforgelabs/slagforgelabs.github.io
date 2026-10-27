@@ -281,9 +281,16 @@ document.getElementById("dl").onclick=()=>{
   const S=640, big=document.createElement("canvas");big.width=big.height=S;
   const b=big.getContext("2d");b.imageSmoothingEnabled=false;
   b.drawImage(document.getElementById("cv"),0,0,S,S);
-  const a=document.createElement("a");
-  a.download="slagbot_unit_"+String(state.unit).padStart(4,"0")+".png";
-  a.href=big.toDataURL("image/png");a.click();
+  // Name the file after the bot, e.g. "Slagbot Unit 0427.png". A blob link
+  // (rather than a long data: URL) is what makes browsers like Safari keep it.
+  const name="Slagbot Unit "+String(state.unit).padStart(4,"0")+".png";
+  big.toBlob(blob=>{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.download=name;a.href=url;
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+  },"image/png");
 };
 state.unit=Math.floor(Math.random()*10000);
 sync();
