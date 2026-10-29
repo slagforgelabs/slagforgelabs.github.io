@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quant Label Is No Longer the Spec — Slagforge Labs</title>
+<meta name="description" content="Quantization in llama.cpp 0.8.0 is a kernel problem now. The label tells you the file size, the fused path tells you the speed.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Quant Label Is No Longer the Spec — Slagforge Labs">
+<meta property="og:description" content="Quantization in llama.cpp 0.8.0 is a kernel problem now. The label tells you the file size, the fused path tells you the speed.">
+<meta property="og:url" content="https://slagforgelabs.ca/research/quantization-deep-dive.html">
+<meta property="og:image" content="https://slagforgelabs.ca/images/forge-header.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Quant Label Is No Longer the Spec — Slagforge Labs">
+<meta name="twitter:description" content="Quantization in llama.cpp 0.8.0 is a kernel problem now. The label tells you the file size, the fused path tells you the speed.">
+<meta name="twitter:image" content="https://slagforgelabs.ca/images/logo.png">
+
+<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=202610261935">
+</head>
+<body class="bg-video-on">
+
+<!-- Video background. The SVG motif below is kept intact and is only hidden
+     by body.bg-video-on in styles.css. -->
+<div class="bg-poster" aria-hidden="true"></div>
+<video class="bg-video" autoplay muted loop playsinline preload="auto"
+       poster="../images/cathode-bg-poster.jpg" aria-hidden="true" tabindex="-1">
+  <source src="../images/cathode-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-video-scrim" aria-hidden="true"></div>
+
+<!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
+     Decorative only — inline SVG so the page makes no outside requests. -->
+<svg class="motif" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="motifStroke" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdc008"/>
+      <stop offset="1" stop-color="#fc7800"/>
+    </linearGradient>
+    <linearGradient id="motifFade" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="motifMask"><rect width="1200" height="700" fill="url(#motifFade)"/></mask>
+
+    <path id="motifT1" d="M600 700V640H380V300H200"/>
+    <path id="motifT2" d="M600 700V640H820V300H1000"/>
+    <path id="motifT3" d="M600 700V600H460V220H280"/>
+    <path id="motifT4" d="M600 700V600H740V220H920"/>
+    <path id="motifT5" d="M600 700V580H980V380"/>
+    <path id="motifT6" d="M600 700V580H220V380"/>
+  </defs>
+
+  <g stroke="url(#motifStroke)" stroke-width="1.6" opacity="0.35" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g class="motif-flow" stroke="url(#motifStroke)" stroke-width="2.2" opacity="0.8" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g fill="#fdc008" opacity="0.9" mask="url(#motifMask)">
+    <circle cx="200" cy="300" r="5"/><circle cx="1000" cy="300" r="5"/>
+    <circle cx="280" cy="220" r="5"/><circle cx="920" cy="220" r="5"/>
+    <circle cx="980" cy="380" r="4.4"/><circle cx="220" cy="380" r="4.4"/>
+  </g>
+
+  <g class="motif-pulses" fill="#fdc008" mask="url(#motifMask)">
+    <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" begin="0s"><mpath href="#motifT1"/></animateMotion></circle>
+    <circle r="5"><animateMotion dur="8.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#motifT2"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="9s" repeatCount="indefinite" begin="2.6s"><mpath href="#motifT3"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#motifT4"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="10s" repeatCount="indefinite" begin="3.4s"><mpath href="#motifT5"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="9.5s" repeatCount="indefinite" begin="4.1s"><mpath href="#motifT6"/></animateMotion></circle>
+  </g>
+</svg>
+
+<main>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../slagbots/index.html">Slagbots</a>
+    <a href="../services/index.html">Services</a>
+    <a href="../systems/index.html">Systems</a>
+    <a href="../research/index.html" aria-current="page">Research</a>
+    <a href="../tools/index.html">Tools</a>
+  </nav>
+  <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
+
+  <figure class="post-hero">
+    <img src="../images/forge-header.jpg" alt="Engraving of the Forge of Vulcan" width="1800" height="600">
+    <div class="post-hero-inner">
+      <h1>The Quant Label Is No Longer the Spec</h1>
+    </div>
+  </figure>
+  <p class="post-meta">October 28, 2026</p>
+
+  <p>Version 0.8.0 of llama.cpp landed on October 28. The headline is not the model list. The interesting change is that the engine now treats quantization as a kernel problem rather than a naming convention.</p>
+  <p>What that means for your hardware: the quant name on a file tells you how big it is. The kernels compiled into your build tell you how fast it runs. Those two numbers have been drifting apart for a year, and this release makes the gap explicit.</p>
+  <p>Consider what shipped in the core this week. A tiled Q4_K matrix multiply for Adreno GPUs. A 256 bit SVE kernel for Q6_K on ARM server CPUs. An SVE GEMV path for MXFP4. Fused mixture of experts gate, up projection and GLU in a single CUDA kernel. Top k expert fusion sized for 384 experts. The pattern repeats across backends, and the pattern is the story. The quant format that matters is the one your silicon has a fused path for.</p>
+  <p>That changes the shopping question. Two files carrying the same label are no longer equivalent. A Q4_K model running through a generic fallback on your GPU can lose to a Q5_K model that hits a fused kernel. The label describes precision. The kernel describes throughput. In a memory bound decode loop, the second number usually decides the experience.</p>
+  <p>Here is what is measured, what is claimed, and what is uncertain.</p>
+  <p><strong>Measured.</strong> The commit log and release notes are public and specific. Fused MoE work in MMQ, the Adreno tiled GEMM, the SVE kernels for Q6_K and MXFP4, and faster IQ4 quant creation are all in the tree. The ggml bump to v0.28.0 adds top k mask support and negative expert index semantics.</p>
+  <p><strong>Claimed.</strong> The release notes describe large backend performance work without publishing per backend benchmarks. Treat any speedup figure you see quoted for these kernels as unverified until someone runs it on hardware you can name.</p>
+  <p><strong>Uncertain.</strong> How much any single kernel buys depends on your memory bandwidth, your batch size and your context length. A fused expert path matters most when experts are spread across host memory. It matters little when the model already fits in video memory.</p>
+  <p>The cache change may matter more than any quant tweak. Host resident experts moved from a plain LRU cache to a 50/50 split policy. For mixture of experts models that stream experts from system memory, cache policy decides your hit rate, and hit rate decides your token rate. That is a memory management fix, not a precision fix, and it will show up in long context runs more than in a short prompt.</p>
+  <p>Two short items from the same release.</p>
+  <p>The engine became a speech server. The LFM3 family arrived with text, vision, audio and omni variants, and the server gained a realtime endpoint plus a text to speech endpoint. Local inference is no longer only about chat completions.</p>
+  <p>The model list is long. Flint, Muse Spark, Kolibri and several smaller decision models all landed in one version. The pace at which mainline absorbs new architectures is now faster than most people can test them.</p>
+  <p>One correction is worth recording. DeepSeek V4.1 Flash support arrived through a separate pull request, while the proposal that had been open for a month closed without merging. The architecture this page has been calling blocked is now in mainline.</p>
+
+  <figure class="post-figure post-figure--narrow">
+    <img src="../images/art/treated/plague-motif-1x1.jpg" alt="Engraving of the fifth plague, livestock disease" width="1400" height="1400">
+    <figcaption>Plague of Livestock, after the Doré circle. The label describes precision; the kernel decides throughput.</figcaption>
+  </figure>
+  <p>So the practical rule for the week: read the kernel list for your backend before you read the quant name. Four bit is not a quality tier any more. It is a family of code paths, and only some of them are fast.</p>
+  <p>The format wars are over. The kernel wars have started.</p>
+
+
+  <div class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li>llama.cpp, <a href="https://github.com/ggml-org/llama.cpp/releases/tag/v0.8.0">Release v0.8.0</a>, October 28, 2026.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/31188">#31188</a>, fused MoE gate, up projection and GLU in MMQ.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/31288">#31288</a>, top k MoE fusion for 384 experts.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/30412">#30412</a>, tiled Q4_K GEMM for Adreno.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/27472">#27472</a>, SVE 256 bit Q6_K kernel.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/28141">#28141</a>, SVE 256 bit MXFP4 GEMV kernel.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/30637">#30637</a>, 50/50 SLRU cache for host resident MoE experts.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/31086">#31086</a>, DeepSeek V4.1 Flash support.</li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Every project starts with a conversation.</p>
+    <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+    <p><a href="../contact/index.html">Contact</a> &nbsp;/&nbsp; <a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a> &nbsp;/&nbsp; <a href="../legal/index.html">Legal</a> &nbsp;/&nbsp; <a href="../tools/index.html">Tools</a></p>
+    <p>Sudbury, Ontario Canada.</p>
+    <p>&copy; 2026 Slagforge Labs. All rights reserved.<br>Slagbot&trade; and Slagboss&trade; are trademarks of Slagforge Labs.</p>
+  </footer>
+</main>
+<script src="../hero-drift.js?v=202610261935" defer></script>
+<script src="../stray-bots.js?v=202610261935" defer></script>
+</body>
+</html>
