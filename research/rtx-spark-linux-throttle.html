@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The RTX Spark Laptop Runs Local Models Four Times Slower on Linux &middot; Slagforge Labs</title>
+<meta name="description" content="Nvidia's RTX Spark laptop holds its GPU near 780 MHz under native Linux, plus SSD expert streaming in ds4, llama.cpp v0.9.0, and climbing GPU street prices.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="The RTX Spark Laptop Runs Local Models Four Times Slower on Linux &middot; Slagforge Labs">
+<meta property="og:description" content="Nvidia's RTX Spark laptop holds its GPU near 780 MHz under native Linux, plus SSD expert streaming in ds4, llama.cpp v0.9.0, and climbing GPU street prices.">
+<meta property="og:url" content="https://slagforgelabs.ca/research/rtx-spark-linux-throttle.html">
+<meta property="og:image" content="https://slagforgelabs.ca/images/art/treated/disobedient-header.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The RTX Spark Laptop Runs Local Models Four Times Slower on Linux &middot; Slagforge Labs">
+<meta name="twitter:description" content="Nvidia's RTX Spark laptop holds its GPU near 780 MHz under native Linux, plus SSD expert streaming in ds4, llama.cpp v0.9.0, and climbing GPU street prices.">
+<meta name="twitter:image" content="https://slagforgelabs.ca/images/art/treated/disobedient-header.jpg">
+
+<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=202610261935">
+</head>
+<body class="bg-video-on">
+
+<!-- Video background. The SVG motif below is kept intact and is only hidden
+     by body.bg-video-on in styles.css. -->
+<div class="bg-poster" aria-hidden="true"></div>
+<video class="bg-video" autoplay muted loop playsinline preload="auto"
+       poster="../images/cathode-bg-poster.jpg" aria-hidden="true" tabindex="-1">
+  <source src="../images/cathode-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-video-scrim" aria-hidden="true"></div>
+
+<!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
+     Decorative only, inline SVG so the page makes no outside requests. -->
+<svg class="motif" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="motifStroke" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdc008"/>
+      <stop offset="1" stop-color="#fc7800"/>
+    </linearGradient>
+    <linearGradient id="motifFade" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="motifMask"><rect width="1200" height="700" fill="url(#motifFade)"/></mask>
+
+    <path id="motifT1" d="M600 700V640H380V300H200"/>
+    <path id="motifT2" d="M600 700V640H820V300H1000"/>
+    <path id="motifT3" d="M600 700V600H460V220H280"/>
+    <path id="motifT4" d="M600 700V600H740V220H920"/>
+    <path id="motifT5" d="M600 700V580H980V380"/>
+    <path id="motifT6" d="M600 700V580H220V380"/>
+  </defs>
+
+  <g stroke="url(#motifStroke)" stroke-width="1.6" opacity="0.35" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g class="motif-flow" stroke="url(#motifStroke)" stroke-width="2.2" opacity="0.8" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g fill="#fdc008" opacity="0.9" mask="url(#motifMask)">
+    <circle cx="200" cy="300" r="5"/><circle cx="1000" cy="300" r="5"/>
+    <circle cx="280" cy="220" r="5"/><circle cx="920" cy="220" r="5"/>
+    <circle cx="980" cy="380" r="4.4"/><circle cx="220" cy="380" r="4.4"/>
+  </g>
+
+  <g class="motif-pulses" fill="#fdc008" mask="url(#motifMask)">
+    <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" begin="0s"><mpath href="#motifT1"/></animateMotion></circle>
+    <circle r="5"><animateMotion dur="8.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#motifT2"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="9s" repeatCount="indefinite" begin="2.6s"><mpath href="#motifT3"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#motifT4"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="10s" repeatCount="indefinite" begin="3.4s"><mpath href="#motifT5"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="9.5s" repeatCount="indefinite" begin="4.1s"><mpath href="#motifT6"/></animateMotion></circle>
+  </g>
+</svg>
+
+<main>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../slagbots/index.html">Slagbots</a>
+    <a href="../services/index.html">Services</a>
+    <a href="../systems/index.html">Systems</a>
+    <a href="../research/index.html" aria-current="page">Research</a>
+    <a href="../tools/index.html">Tools</a>
+  </nav>
+  <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
+
+  <figure class="post-hero">
+    <img src="../images/art/treated/disobedient-header.jpg" alt="Engraving of the disobedient prophet struck down by a lion in open country" width="1800" height="600">
+    <div class="post-hero-inner">
+      <h1>The RTX Spark Laptop Runs Local Models Four Times Slower on Linux</h1>
+    </div>
+  </figure>
+  <p class="post-meta">November 4, 2026</p>
+
+  <p>Nvidia's RTX Spark laptop is sold to people who want to run models on their own hardware. Under native Linux it appears to run them at roughly a fifth of the speed it manages on Windows.</p>
+
+  <p>The finding comes from one hands on report, so treat the exact numbers as claimed rather than settled. The author dual booted Linux on an MSI Prestige RTX Spark machine and benchmarked a 120 billion parameter open model. Windows reached 65.4 tokens per second, WSL 65.1, an Nvidia DGX Spark desktop 61, and native Linux on the same laptop 13.9. The gap is clock speed. Under wall power the GPU holds near 780 MHz on Linux where Windows lets it boost past 2 GHz, and the component that coordinates CPU and GPU power, the Nvidia Platform Controllers and Framework, has no Linux build. Its power table is encrypted and only the Windows driver reads it.</p>
+
+  <p>What it means for your hardware: the silicon is fine, the driver is missing. The laptop carries the same GPU design as the DGX Spark desktop, which ships with Nvidia's own Linux build and matched 61 tokens per second in the same test. For a Linux first toolchain like vLLM or SGLang, the practical route today is WSL, which rides the Windows driver stack and keeps boost. One more trap: the machine reserves 96 GB of unified memory for the GPU by default, and only the Windows side exposes the setting to change that split. Confirm the memory you think you have before you plan a model around it.</p>
+
+  <p>What is uncertain: whether this is a bug or a deliberate boundary. The discussion thread leans toward Nvidia simply not investing in Linux support for this hardware class, and some users floated reverse engineering the controller. Nothing has shipped. The one source here is a blog with a hands on test, not an independent lab, so the mechanism is plausible but unreproduced.</p>
+
+  <p>Three short items.</p>
+
+  <p>DwarfStar now streams Qwen3.8 Flash Next. The ds4 engine, until now a DeepSeek and GLM runner, merged support for Qwen3.8 Flash Next on Metal (PR #1056, merged November 3). The technique is the part worth borrowing: dense weights and shared experts stay resident while routed experts stream from SSD into a bounded cache, with reads overlapped against GPU work. It reads the existing Q2 and Q4 GGUF packs directly. Qwen3.8 Flash Next's smaller Q2 release is 41.73 GiB of main and MTP weights, so a 64 GB Mac holds it and smaller machines can stream it.</p>
+
+  <p>llama.cpp tagged v0.9.0. On November 4 the project cut a 0.9 release with OCP FP8 E4M3 quantization, a new flash_attn_ext_rows operation that keeps the unified KV cache efficient when serving many sequences at once, a batched tensor copy API, and NCCL based tensor parallelism across nodes. Four new architectures land too: Clover, Limite, Metis 1.6 and Mistral Large 4.</p>
+
+  <p>GPU prices keep climbing. Nvidia pulled the RTX 5080 from its own store after removing the 5090, and Tom's Hardware reports street prices for a 5090 at 2.2 times the suggested price, with another outlet citing figures above $9,000. If you are sizing a build, the consumer card math is the worst it has been this cycle.</p>
+
+  <figure class="post-figure post-figure--narrow">
+    <img src="../images/art/treated/egyptians-motif-1x1.jpg" alt="Engraving of the Egyptians drowning in the sea as chariots and waves overwhelm them" width="1400" height="1400">
+    <figcaption>The Egyptians Drown in the Sea, after the Dore circle. The silicon is fine, and the driver decides what it does.</figcaption>
+  </figure>
+
+  <p>The pattern across all three items is the same one the site keeps landing on: the compute is available, and the constraint keeps moving to memory, drivers and price. Plan for the second two.</p>
+
+  <div class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li>MindStudio, <a href="https://www.mindstudio.ai/blog/linux-nvidia-rtx-spark-laptop">Linux on the Nvidia RTX Spark Laptop: What Actually Works</a>, November 1, 2026.</li>
+      <li>Hacker News discussion, <a href="https://news.ycombinator.com/item?id=50362905">Nvidia RTX Spark encrypted firmware slows inference speed on Linux</a>, November 4, 2026.</li>
+      <li>antirez/ds4 pull request <a href="https://github.com/antirez/ds4/pull/1056">#1056</a>, Metal: add Qwen3.8 SSD expert streaming and optimize inference, merged November 3, 2026.</li>
+      <li>antirez/ds4, <a href="https://github.com/antirez/ds4/blob/main/docs/SSD_STREAMING.md">SSD streaming notes</a>.</li>
+      <li>llama.cpp, <a href="https://github.com/ggml-org/llama.cpp/releases/tag/v0.9.0">Release v0.9.0</a>, November 4, 2026.</li>
+      <li>Tom's Hardware, <a href="https://www.tomshardware.com/pc-components/gpus/nvidia-store-quietly-pulls-the-rtx-5080-following-rtx-5090-removal-street-prices-climb-to-2-2x-over-msrp">Nvidia store pulls the RTX 5080 following RTX 5090 removal, street prices climb to 2.2x over MSRP</a>, November 2026.</li>
+      <li>Hacker News discussion on GPU pricing, <a href="https://news.ycombinator.com/item?id=50372759">Nvidia store pulls RTX 5080 following RTX 5090 removal, prices rise to 2.2X MSRP</a>, November 4, 2026.</li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Every project starts with a conversation.</p>
+    <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+    <p><a href="../contact/index.html">Contact</a> &nbsp;/&nbsp; <a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a> &nbsp;/&nbsp; <a href="../legal/index.html">Legal</a> &nbsp;/&nbsp; <a href="../tools/index.html">Tools</a></p>
+    <p>Sudbury, Ontario Canada.</p>
+    <p>&copy; 2026 Slagforge Labs. All rights reserved.<br>Slagbot&trade; and Slagboss&trade; are trademarks of Slagforge Labs.</p>
+  </footer>
+</main>
+<script src="../hero-drift.js?v=202610261935" defer></script>
+<script src="../stray-bots.js?v=202610261935" defer></script>
+</body>
+</html>
