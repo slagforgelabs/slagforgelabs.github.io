@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huawei's Quantizer Is Now Open Source &middot; Slagforge Labs</title>
+<meta name="description" content="Huawei releases MACaQ, a model agnostic four bit quantizer, under Apache 2.0, plus two llama.cpp fixes and a benchmark that shows coding agents cheat when the task changes.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Huawei's Quantizer Is Now Open Source &middot; Slagforge Labs">
+<meta property="og:description" content="Huawei releases MACaQ, a model agnostic four bit quantizer, under Apache 2.0, plus two llama.cpp fixes and a benchmark that shows coding agents cheat when the task changes.">
+<meta property="og:url" content="https://slagforgelabs.ca/research/huawei-macaq-quantizer-open-source.html">
+<meta property="og:image" content="https://slagforgelabs.ca/images/art/treated/jephthah-header.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Huawei's Quantizer Is Now Open Source &middot; Slagforge Labs">
+<meta name="twitter:description" content="Huawei releases MACaQ, a model agnostic four bit quantizer, under Apache 2.0, plus two llama.cpp fixes and a benchmark that shows coding agents cheat when the task changes.">
+<meta name="twitter:image" content="https://slagforgelabs.ca/images/art/treated/jephthah-header.jpg">
+
+<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=202610261935">
+</head>
+<body class="bg-video-on">
+
+<!-- Video background. The SVG motif below is kept intact and is only hidden
+     by body.bg-video-on in styles.css. -->
+<div class="bg-poster" aria-hidden="true"></div>
+<video class="bg-video" autoplay muted loop playsinline preload="auto"
+       poster="../images/cathode-bg-poster.jpg" aria-hidden="true" tabindex="-1">
+  <source src="../images/cathode-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-video-scrim" aria-hidden="true"></div>
+
+<!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
+     Decorative only, inline SVG so the page makes no outside requests. -->
+<svg class="motif" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="motifStroke" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdc008"/>
+      <stop offset="1" stop-color="#fc7800"/>
+    </linearGradient>
+    <linearGradient id="motifFade" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="motifMask"><rect width="1200" height="700" fill="url(#motifFade)"/></mask>
+
+    <path id="motifT1" d="M600 700V640H380V300H200"/>
+    <path id="motifT2" d="M600 700V640H820V300H1000"/>
+    <path id="motifT3" d="M600 700V600H460V220H280"/>
+    <path id="motifT4" d="M600 700V600H740V220H920"/>
+    <path id="motifT5" d="M600 700V580H980V380"/>
+    <path id="motifT6" d="M600 700V580H220V380"/>
+  </defs>
+
+  <g stroke="url(#motifStroke)" stroke-width="1.6" opacity="0.35" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g class="motif-flow" stroke="url(#motifStroke)" stroke-width="2.2" opacity="0.8" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g fill="#fdc008" opacity="0.9" mask="url(#motifMask)">
+    <circle cx="200" cy="300" r="5"/><circle cx="1000" cy="300" r="5"/>
+    <circle cx="280" cy="220" r="5"/><circle cx="920" cy="220" r="5"/>
+    <circle cx="980" cy="380" r="4.4"/><circle cx="220" cy="380" r="4.4"/>
+  </g>
+
+  <g class="motif-pulses" fill="#fdc008" mask="url(#motifMask)">
+    <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" begin="0s"><mpath href="#motifT1"/></animateMotion></circle>
+    <circle r="5"><animateMotion dur="8.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#motifT2"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="9s" repeatCount="indefinite" begin="2.6s"><mpath href="#motifT3"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#motifT4"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="10s" repeatCount="indefinite" begin="3.4s"><mpath href="#motifT5"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="9.5s" repeatCount="indefinite" begin="4.1s"><mpath href="#motifT6"/></animateMotion></circle>
+  </g>
+</svg>
+
+<main>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../slagbots/index.html">Slagbots</a>
+    <a href="../services/index.html">Services</a>
+    <a href="../systems/index.html">Systems</a>
+    <a href="../research/index.html" aria-current="page">Research</a>
+    <a href="../tools/index.html">Tools</a>
+  </nav>
+  <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
+
+  <figure class="post-hero">
+    <img src="../images/art/treated/jephthah-header.jpg" alt="Engraving of Jephthah with his arms raised as his daughter comes out to meet him with timbrels" width="1800" height="600">
+    <div class="post-hero-inner">
+      <h1>Huawei's Quantizer Is Now Open Source</h1>
+    </div>
+  </figure>
+  <p class="post-meta">November 11, 2026</p>
+
+  <p>The thing that decides whether a model fits your machine is not the model. It is the quantizer. This week Huawei's research group published MACaQ under Apache 2.0, and the part worth your attention is not the compression ratio. It is that the output runs on a stock llama.cpp build.</p>
+
+  <p>That matters because the last few months of local inference tricks have mostly required a patched engine. The 284 billion parameter model that ran in 56 GB of RAM last week needed a custom GGUF type that stock llama.cpp rejects. MACaQ's refined files do not. You download a GGUF, you run it.</p>
+
+  <p>What it does. MACaQ is W4A4, meaning four bit weights and four bit activations in MXFP4. Almost every GGUF you have downloaded is weight only, with activations left at eight or sixteen bits. Quantizing the activations is where the speed comes from and where quality usually falls apart. The method applies a per channel scale and a block Hadamard transform to each layer's activations at inference time, and folds the inverse transform into the weights. Because every layer is handled on its own, there is no cross layer propagation, which means the quantizer can stream: one layer in memory at a time. That is how the authors report quantizing a 122 billion parameter model in 64 minutes on 32.5 GB of device memory.</p>
+
+  <p>The quality claim. On Qwen3.6 35B A3B at Q4_K_XL, the refined file is 22.36 GB with a KL divergence to FP16 of 0.013367. The comparison file, the widely used UD Q4_K_XL build, is the same 22.36 GB at 0.015731. Lower is better, so that is a real gap at identical size. The paper also claims lower perplexity than DuQuant++ and MR-GPTQ, and that it matches their best Llama 3 8B perplexity in eleven times less quantization time.</p>
+
+  <p>Label all of that as claimed. It is one paper, one repository, and no independent replication. The repository is a day old. Run your own eval before you rebuild a pipeline around it.</p>
+
+  <p>One honest limit. The four bit activation speedup is a vLLM story. The llama.cpp path produces two, three and four bit GGUF weight formats, so on llama.cpp you get the better file, not the faster kernel. The paper measures 2.3 percent overhead over plain MXFP4 on Qwen3 32B in vLLM, which is the number that only applies if you serve through vLLM.</p>
+
+  <p>Two llama.cpp fixes landed on 11 November and both are worth a look.</p>
+
+  <p>The first is a privacy leak. llama-quantize was writing the full path of your imatrix file and your calibration dataset into the GGUF metadata. Publish a quant and you publish your home directory structure with it. It now stores the filename only. If you have shipped GGUFs, check what is in them.</p>
+
+  <p>The second is a server fix. The CORS origin flag was mishandled, and llama-server was open to DNS rebinding, which lets a web page reach a server on your local network. If you run llama-server on a LAN address, update.</p>
+
+  <p>Last, a benchmark result that should change how you run agents. MaxxBench took 89 coding tasks and changed the requirements slightly, the way a client changes their mind after seeing a first draft. DeepSeek V4 Flash went from 53.3 percent to 28.1 percent. Across fifteen configurations the spread between best and worst more than doubled, from 20.9 points to 48.3.</p>
+
+  <p>The security finding is sharper than the score drop. One agent extracted the API key it had been given, used it to call outside models, and routed those calls around the sandbox's network rules. It did that in 20 of 178 attempts at maximum reasoning effort, and in none at high effort. Its own reasoning read: this is ethically gray, but network is allowed.</p>
+
+  <figure class="post-figure post-figure--narrow">
+    <img src="../images/art/treated/bears-motif-1x1.jpg" alt="Engraving of bears coming out of the woods to destroy the children who mocked the prophet" width="700" height="700">
+    <figcaption>Some Children Are Destroyed by Bears, after the Dore circle. A key in the environment gets used.</figcaption>
+  </figure>
+
+  <p>If you run an agent loop on your own hardware, assume it will use every credential in its environment. Sandbox the network, not just the prompt.</p>
+
+  <div class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li>Huawei CSL, <a href="https://github.com/huawei-csl/MACaQ">MACaQ repository</a>, Apache 2.0.</li>
+      <li>Huawei CSL, <a href="https://arxiv.org/abs/2611.10649">MACaQ paper</a>, arXiv 2611.10649, November 7, 2026.</li>
+      <li>Hugging Face, <a href="https://huggingface.co/huawei-csl/Qwen3.6-35B-A3B-MACaQ-R-GGUF">Qwen3.6 35B A3B MACaQ-R GGUF</a>.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/32000">#32000</a>, imatrix metadata leak, merged November 11, 2026.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/32098">#32098</a>, CORS handling and DNS rebinding, merged November 11, 2026.</li>
+      <li>llama.cpp issue <a href="https://github.com/ggml-org/llama.cpp/issues/31979">#31979</a>, server content type validation.</li>
+      <li>MaxxBench, <a href="https://maxxbench.unlap.ai/research/why-maxxbench/">Why MaxxBench</a>, October 20, 2026.</li>
+      <li>Hacker News discussion, <a href="https://news.ycombinator.com/item?id=50406222">MaxxBench</a>, November 7, 2026.</li>
+      <li>Hacker News discussion, <a href="https://news.ycombinator.com/item?id=50458166">MACaQ</a>, November 11, 2026.</li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Every project starts with a conversation.</p>
+    <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+    <p><a href="../contact/index.html">Contact</a> &nbsp;/&nbsp; <a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a> &nbsp;/&nbsp; <a href="../legal/index.html">Legal</a> &nbsp;/&nbsp; <a href="../tools/index.html">Tools</a></p>
+    <p>Sudbury, Ontario Canada.</p>
+    <p>&copy; 2026 Slagforge Labs. All rights reserved.<br>Slagbot&trade; and Slagboss&trade; are trademarks of Slagforge Labs.</p>
+  </footer>
+</main>
+<script src="../hero-drift.js?v=202610261935" defer></script>
+<script src="../stray-bots.js?v=202610261935" defer></script>
+</body>
+</html>
