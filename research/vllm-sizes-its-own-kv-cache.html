@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vLLM Now Sizes Its Own KV Cache &middot; Slagforge Labs</title>
+<meta name="description" content="vLLM v0.34.0 sizes its own KV cache from the memory left after warmup, llama.cpp picks CUDA precision per GPU by SKU, and disaggregated prefill and decode reaches production.">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="vLLM Now Sizes Its Own KV Cache &middot; Slagforge Labs">
+<meta property="og:description" content="vLLM v0.34.0 sizes its own KV cache from the memory left after warmup, llama.cpp picks CUDA precision per GPU by SKU, and disaggregated prefill and decode reaches production.">
+<meta property="og:url" content="https://slagforgelabs.ca/research/vllm-sizes-its-own-kv-cache.html">
+<meta property="og:image" content="https://slagforgelabs.ca/images/art/treated/writing-on-the-wall-header.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="vLLM Now Sizes Its Own KV Cache &middot; Slagforge Labs">
+<meta name="twitter:description" content="vLLM v0.34.0 sizes its own KV cache from the memory left after warmup, llama.cpp picks CUDA precision per GPU by SKU, and disaggregated prefill and decode reaches production.">
+<meta name="twitter:image" content="https://slagforgelabs.ca/images/art/treated/writing-on-the-wall-header.jpg">
+
+<link rel="icon" href="../images/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=202610261935">
+</head>
+<body class="bg-video-on">
+
+<!-- Video background. The SVG motif below is kept intact and is only hidden
+     by body.bg-video-on in styles.css. -->
+<div class="bg-poster" aria-hidden="true"></div>
+<video class="bg-video" autoplay muted loop playsinline preload="auto"
+       poster="../images/cathode-bg-poster.jpg" aria-hidden="true" tabindex="-1">
+  <source src="../images/cathode-bg.mp4" type="video/mp4">
+</video>
+<div class="bg-video-scrim" aria-hidden="true"></div>
+
+<!-- Circuit motif: traces fan out from bottom centre and fade toward the top.
+     Decorative only, inline SVG so the page makes no outside requests. -->
+<svg class="motif" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="motifStroke" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdc008"/>
+      <stop offset="1" stop-color="#fc7800"/>
+    </linearGradient>
+    <linearGradient id="motifFade" x1="600" y1="700" x2="600" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.85"/>
+      <stop offset="0.6" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="motifMask"><rect width="1200" height="700" fill="url(#motifFade)"/></mask>
+
+    <path id="motifT1" d="M600 700V640H380V300H200"/>
+    <path id="motifT2" d="M600 700V640H820V300H1000"/>
+    <path id="motifT3" d="M600 700V600H460V220H280"/>
+    <path id="motifT4" d="M600 700V600H740V220H920"/>
+    <path id="motifT5" d="M600 700V580H980V380"/>
+    <path id="motifT6" d="M600 700V580H220V380"/>
+  </defs>
+
+  <g stroke="url(#motifStroke)" stroke-width="1.6" opacity="0.35" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g class="motif-flow" stroke="url(#motifStroke)" stroke-width="2.2" opacity="0.8" mask="url(#motifMask)">
+    <use href="#motifT1"/><use href="#motifT2"/><use href="#motifT3"/>
+    <use href="#motifT4"/><use href="#motifT5"/><use href="#motifT6"/>
+  </g>
+
+  <g fill="#fdc008" opacity="0.9" mask="url(#motifMask)">
+    <circle cx="200" cy="300" r="5"/><circle cx="1000" cy="300" r="5"/>
+    <circle cx="280" cy="220" r="5"/><circle cx="920" cy="220" r="5"/>
+    <circle cx="980" cy="380" r="4.4"/><circle cx="220" cy="380" r="4.4"/>
+  </g>
+
+  <g class="motif-pulses" fill="#fdc008" mask="url(#motifMask)">
+    <circle r="5"><animateMotion dur="7s" repeatCount="indefinite" begin="0s"><mpath href="#motifT1"/></animateMotion></circle>
+    <circle r="5"><animateMotion dur="8.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#motifT2"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="9s" repeatCount="indefinite" begin="2.6s"><mpath href="#motifT3"/></animateMotion></circle>
+    <circle r="4.6"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0.7s"><mpath href="#motifT4"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="10s" repeatCount="indefinite" begin="3.4s"><mpath href="#motifT5"/></animateMotion></circle>
+    <circle r="4.2"><animateMotion dur="9.5s" repeatCount="indefinite" begin="4.1s"><mpath href="#motifT6"/></animateMotion></circle>
+  </g>
+</svg>
+
+<main>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../slagbots/index.html">Slagbots</a>
+    <a href="../services/index.html">Services</a>
+    <a href="../systems/index.html">Systems</a>
+    <a href="../research/index.html" aria-current="page">Research</a>
+    <a href="../tools/index.html">Tools</a>
+  </nav>
+  <a href="../index.html" class="brand-logo-link" aria-label="Slagforge Labs home"><img src="../images/logo.png" alt="Slagforge Labs" class="brand-logo"></a>
+
+  <figure class="post-hero">
+    <img src="../images/art/treated/writing-on-the-wall-header.jpg" alt="Engraving of Daniel reading the writing on the wall before Belshazzar's startled court" width="1800" height="600">
+    <div class="post-hero-inner">
+      <h1>vLLM Now Sizes Its Own KV Cache</h1>
+    </div>
+  </figure>
+  <p class="post-meta">November 18, 2026</p>
+
+  <p>There is a set of decisions in local inference that used to be yours: how much memory to hand the KV cache, what numeric precision to accumulate in, and which silicon runs the first phase of a request versus the last. This week three separate projects moved those decisions into the software.</p>
+
+  <p>vLLM v0.34.0 landed on November 16 with 1,061 commits from 412 contributors. The headline is a default change. Extensible KV cache is now on, and the server sizes the cache from the memory actually free after warmup rather than from a number you pass in, so the release notes now tell most people to remove gpu_memory_utilization from their configs entirely. On a fixed box serving long context, that is less guessing and fewer out of memory surprises at load.</p>
+
+  <p>The same release removes the old path. Model Runner V1 is gone and V2 is the only GPU runner, so V1 logits processors now fail at startup. The default block size moves from 16 to 64, the ROCm 7.2 images are dropped for ROCm 10.0, and huggingface_hub 2.0.0 or newer is required. Read the upgrade table before you pull, because a restart that dies at import is a worse surprise than a slow benchmark.</p>
+
+  <p>What you get for reading it is measured at the top of the range: up to 1.95x faster decode on a large model running on GB200 class hardware, up to 1.6x throughput on GLM-5.3-Flash, and 1.24 to 1.40x faster time to first token on long prompts. Those are vendor figures, so treat them as a ceiling. Ten models were added, including the trillion parameter open weight Mistral Large 4.</p>
+
+  <p>llama.cpp made the same kind of move. A CUDA change merged on November 18 classifies your GPU by SKU and picks numeric precision for it: GeForce cards keep FP16 inputs and accumulation on eligible quantized operations, while professional cards and Spark prefer BF16 inputs with FP32 accumulation. FP32 accumulation costs throughput on GeForce, so llama.cpp no longer pays that price there just because it is the safer math. Your card gets slightly faster on quantized work with no flag to change.</p>
+
+  <p>llama.cpp also shipped a first party chat interface. Running npx @ggml-org/llama-chat serves a local UI, and npx llama-chat build writes it out as static files. It is the project's own front end, and it removes one reason people reached for a third party app.</p>
+
+  <p>On the infrastructure side, Cerebras put disaggregated inference into production on November 17: GPUs run the prefill, its wafer scale hardware runs the decode, and the company claims five times more tokens per megawatt at the same generation speed. That figure is a vendor claim and unverified, but the direction matters. Prefill and decode have opposite bottlenecks, compute on one side and memory bandwidth on the other, so splitting them across different silicon is now a datacenter answer rather than a lab experiment. A two box home setup has been doing the same split for a year.</p>
+
+  <figure class="post-figure post-figure--narrow">
+    <img src="../images/art/treated/fiery-furnace-motif-3x2.jpg" alt="Engraving of the three men standing unharmed in the furnace while the king and his court watch from the parapet above" width="1400" height="933">
+    <figcaption>Shadrach, Meshach and Abednego in the Furnace, after Gustave Dor&eacute;. Three decisions that used to be yours.</figcaption>
+  </figure>
+
+  <p>The thread through all of it is that the tools are absorbing the tuning. That is mostly good news when you are building on your own hardware: better defaults, fewer flags to get wrong. It also means your throughput math changes when you upgrade, so read the release notes before a scheduler moves you onto the new version.</p>
+
+  <div class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li>vLLM, <a href="https://github.com/vllm-project/vllm/releases/tag/v0.34.0">v0.34.0 release notes</a>, November 16, 2026.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/30672">#30672</a>, CUDA SKU aware FP16/BF16 accumulation gating, merged November 18, 2026.</li>
+      <li>llama.cpp pull request <a href="https://github.com/ggml-org/llama.cpp/pull/32524">#32524</a>, run Llama Chat with npx @ggml-org/llama-chat, merged November 18, 2026.</li>
+      <li>Cerebras, <a href="https://www.cerebras.ai/blog/cerebras-launches-disaggregated-inference">Cerebras launches disaggregated inference</a>, November 17, 2026.</li>
+      <li>Hugging Face, <a href="https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B">mistralai/Mistral-Large-4-1T-A52B model card</a>.</li>
+      <li>npm, <a href="https://www.npmjs.com/package/@ggml-org/llama-chat">@ggml-org/llama-chat</a>.</li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Every project starts with a conversation.</p>
+    <p><a href="mailto:lab@slagforgelabs.ca">lab@slagforgelabs.ca</a></p>
+    <p><a href="../contact/index.html">Contact</a> &nbsp;/&nbsp; <a href="../terms/index.html">Terms</a> &nbsp;/&nbsp; <a href="../privacy/index.html">Privacy</a> &nbsp;/&nbsp; <a href="../legal/index.html">Legal</a> &nbsp;/&nbsp; <a href="../tools/index.html">Tools</a></p>
+    <p>Sudbury, Ontario Canada.</p>
+    <p>&copy; 2026 Slagforge Labs. All rights reserved.<br>Slagbot&trade; and Slagboss&trade; are trademarks of Slagforge Labs.</p>
+  </footer>
+</main>
+<script src="../hero-drift.js?v=202610261935" defer></script>
+<script src="../stray-bots.js?v=202610261935" defer></script>
+</body>
+</html>
